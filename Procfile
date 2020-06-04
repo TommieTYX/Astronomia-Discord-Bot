@@ -1,1 +1,1 @@
-worker: java -jar target/astronomia.DiscordBot-1.0-SNAPSHOT-jar-with-dependencies.jar
+worker: java -jar target/DiscordBot-0.1-jar-with-dependencies.jar
