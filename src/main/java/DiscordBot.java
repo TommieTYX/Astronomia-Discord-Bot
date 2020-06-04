@@ -7,7 +7,9 @@ import javax.security.auth.login.LoginException;
 
 public class DiscordBot {
     public static void main(String[] args) {
-        JDABuilder builder = new JDABuilder(args[0]);
+        final String BOT_TOKEN = System.getenv().get("BOT_TOKEN");
+
+        JDABuilder builder = new JDABuilder(BOT_TOKEN);
 
         // Disable parts of the cache
         builder.disableCache(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE);
