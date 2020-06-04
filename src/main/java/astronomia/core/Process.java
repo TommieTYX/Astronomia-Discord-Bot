@@ -1,15 +1,25 @@
+package astronomia.core;
+
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
 
-public class DiscordBot {
-    public static void main(String[] args) {
-        final String BOT_TOKEN = System.getenv().get("BOT_TOKEN");
+public class Process {
+    private static final Logger log = LoggerFactory.getLogger(Process.class);
 
-        JDABuilder builder = new JDABuilder(BOT_TOKEN);
+    private String token;
+
+    public Process(String token) {
+        this.token = token;
+    }
+
+    public void run() {
+        JDABuilder builder = new JDABuilder(token);
 
         // Disable parts of the cache
         builder.disableCache(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE);
@@ -19,11 +29,14 @@ public class DiscordBot {
         builder.setCompression(Compression.NONE);
         // Set activity (like "playing Something")
         builder.setActivity(Activity.watching("You 😎"));
+        // Add Command Listener
+        builder.addEventListeners(new CommandListener());
 
         try {
             builder.build();
-        } catch (LoginException e) {
-            System.out.println("Error: " + e.getMessage());
+        } catch (
+                LoginException e) {
+            log.error("Error logging in bot account. Error: {}", e.getMessage());
         }
     }
 }
