@@ -22,7 +22,7 @@ public class Process {
         JDABuilder builder = new JDABuilder(token);
 
         // Disable parts of the cache
-        builder.disableCache(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE);
+        builder.disableCache(CacheFlag.ACTIVITY);
         // Enable the bulk delete event
         builder.setBulkDeleteSplittingEnabled(false);
         // Disable compression (not recommended)
