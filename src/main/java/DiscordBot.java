@@ -18,7 +18,7 @@ public class DiscordBot {
         // Disable compression (not recommended)
         builder.setCompression(Compression.NONE);
         // Set activity (like "playing Something")
-        builder.setActivity(Activity.watching("You... 😎"));
+        builder.setActivity(Activity.watching("You 😎"));
 
         try {
             builder.build();
