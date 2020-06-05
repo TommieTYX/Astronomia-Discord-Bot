@@ -57,4 +57,8 @@ public class TrackScheduler extends AudioEventAdapter {
   public void emptyAllTrack() {
     player.destroy();
   }
+
+  public void setPlayerPause(boolean isPause) {
+    player.setPaused(isPause);
+  }
 }

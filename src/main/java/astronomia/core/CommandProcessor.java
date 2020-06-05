@@ -34,6 +34,12 @@ public class CommandProcessor {
             case "skip" :
                 MusicPlayer.skipTrack(event.getChannel());
                 break;
+            case "pause" :
+                MusicPlayer.pauseTrack(event.getChannel(),true);
+                break;
+            case "continue" :
+                MusicPlayer.pauseTrack(event.getChannel(),false);
+                break;
             default:
                 log.info("Command not found!");
                 event.getChannel().sendMessage("What are you talking about, you talking to me? Get your command right dumb dumb! 😎").queue();

@@ -105,4 +105,17 @@ public class MusicPlayer {
         musicManager.scheduler.emptyAllTrack();
         channel.sendMessage("Stopping all tracks.").queue();
     }
+
+    public static void pauseTrack(TextChannel channel, boolean isPause) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        musicManager.scheduler.setPlayerPause(isPause);
+        if(isPause) {
+            channel.sendMessage("You mute me? Watch out!").queue();
+        }else if(!isPause){
+            channel.sendMessage("Finally you remember me! 😎").queue();
+        }else{
+            channel.sendMessage("Unable to mute me NOOB! 😎").queue();
+        }
+    }
+
 }
