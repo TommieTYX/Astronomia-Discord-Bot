@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static astronomia.constant.ApplicationConstants.COMMAND_PREFIX;
+import static astronomia.constant.ApplicationConstants.DEFAULT_COMMAND_PREFIX;
 
 public class CommandProcessor {
 
@@ -17,7 +17,7 @@ public class CommandProcessor {
 
     public void run(GuildMessageReceivedEvent event) {
         Command userCommand = MessageHelper.extractCommand(event.getMessage().getContentRaw());
-        switch (userCommand.getCommand().replace(COMMAND_PREFIX, "")) {
+        switch (userCommand.getCommand().replace(DEFAULT_COMMAND_PREFIX, "")) {
             case "ping" :
                 Fun.ping(event);
                 break;
@@ -25,14 +25,23 @@ public class CommandProcessor {
                 Accessibility.join(event.getGuild(), event.getChannel(), event.getMember());
                 break;
             case "leave" :
-                MusicPlayer.stopAllTracks(event.getChannel());
+                MusicPlayer.getInstance().stopAllTracks(event.getChannel());
                 Accessibility.leave(event.getGuild(), event.getChannel());
                 break;
             case "play" :
-                MusicPlayer.loadAndPlay(event.getGuild(), event.getChannel(), event.getMember(), userCommand.getMessage());
+                MusicPlayer.getInstance().loadAndPlay(event.getGuild(), event.getChannel(), event.getMember(), userCommand.getMessage());
                 break;
             case "skip" :
-                MusicPlayer.skipTrack(event.getChannel());
+                MusicPlayer.getInstance().skipTrack(event.getChannel());
+                break;
+            case "pause" :
+                MusicPlayer.getInstance().pauseTrack(event.getChannel(),true);
+                break;
+            case "continue" :
+                MusicPlayer.getInstance().pauseTrack(event.getChannel(),false);
+                break;
+            case "volume" :
+                MusicPlayer.getInstance().setVolume(event.getChannel(), userCommand.getMessage());
                 break;
             default:
                 log.info("Command not found!");
