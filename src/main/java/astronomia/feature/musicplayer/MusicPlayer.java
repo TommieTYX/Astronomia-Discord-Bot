@@ -1,6 +1,7 @@
 package astronomia.feature.musicplayer;
 
 import astronomia.feature.Accessibility;
+import astronomia.utils.MessageHelper;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -166,7 +167,13 @@ public class MusicPlayer {
 
         while(audioTrackIterator.hasNext()){
             AudioTrack currentAudioTrackIt = audioTrackIterator.next();
-            queueListBuilder.append(songCounter).append(". ").append("["+currentAudioTrackIt.getInfo().title+"]("+currentAudioTrackIt.getInfo().uri+")").append("\n Duration: ").append(getTimeStamp(currentAudioTrackIt.getDuration())).append("\n\n");
+            queueListBuilder.append(songCounter)
+                    .append(". ")
+                    .append(MessageHelper.convertTextToURL(currentAudioTrackIt.getInfo().title,
+                            currentAudioTrackIt.getInfo().uri))
+                    .append("\n Duration: ")
+                    .append(getTimeStamp(currentAudioTrackIt.getDuration()))
+                    .append("\n\n");
             songCounter++;
         }
         if(StringUtils.isBlank(queueListBuilder.toString())){

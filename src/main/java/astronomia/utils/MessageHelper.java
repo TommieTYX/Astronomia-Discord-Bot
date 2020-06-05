@@ -18,4 +18,8 @@ public class MessageHelper {
     public static String mention(User user) {
         return String.format("<@%s>", user.getId());
     }
+
+    public static String convertTextToURL(String currentText, String currentUrl){
+        return String.format("[%s](%s)", currentText, currentUrl);
+    }
 }
