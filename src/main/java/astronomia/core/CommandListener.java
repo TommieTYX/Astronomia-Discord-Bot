@@ -1,17 +1,15 @@
 package astronomia.core;
 
-import astronomia.feature.musicplayer.MusicPlayer;
 import astronomia.utils.MessageHelper;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import static astronomia.constant.ApplicationConstants.COMMAND_PREFIX;
+import static astronomia.constant.ApplicationConstants.DEFAULT_COMMAND_PREFIX;
 
 public class CommandListener extends ListenerAdapter {
 
     private CommandProcessor commandProcessor = new CommandProcessor();
-    private MusicPlayer musicPlayer = new MusicPlayer();
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
@@ -28,6 +26,6 @@ public class CommandListener extends ListenerAdapter {
     }
 
     private boolean isCommand(String msg) {
-        return !msg.isBlank() && MessageHelper.extractCommand(msg).getCommand().startsWith(COMMAND_PREFIX);
+        return !msg.isBlank() && MessageHelper.extractCommand(msg).getCommand().startsWith(DEFAULT_COMMAND_PREFIX);
     }
 }

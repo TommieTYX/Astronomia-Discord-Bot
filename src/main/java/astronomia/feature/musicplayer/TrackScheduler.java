@@ -8,6 +8,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static astronomia.constant.ApplicationConstants.DEFAULT_MUSIC_PLAYER_VOLUME;
+
 /**
  * This class schedules tracks for the audio player. It contains the queue of tracks.
  */
@@ -20,6 +22,7 @@ public class TrackScheduler extends AudioEventAdapter {
    */
   public TrackScheduler(AudioPlayer player) {
     this.player = player;
+    this.player.setVolume(DEFAULT_MUSIC_PLAYER_VOLUME);
     this.queue = new LinkedBlockingQueue<>();
   }
 
