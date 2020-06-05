@@ -19,6 +19,7 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 
 public class MusicPlayer {
@@ -105,11 +106,11 @@ public class MusicPlayer {
 
     public void skipTrack(TextChannel channel) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
-        musicManager.scheduler.nextTrack();
 
         if(musicManager.scheduler.getCurrentPlayingTrack() == null){
             channel.sendMessage("You have no more songs to skip, go skip yourself 😎").queue();
         }else {
+            musicManager.scheduler.nextTrack();
             channel.sendMessage("Skipped to next track.").queue();
         }
     }
@@ -152,14 +153,14 @@ public class MusicPlayer {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         AudioTrack curPlayingTrack = musicManager.scheduler.getCurrentPlayingTrack();
         if(curPlayingTrack != null){
-            BlockingQueue<AudioTrack> curAudioTrackQueue = musicManager.scheduler.getCurrentQueuedTracksList();
+            Vector<AudioTrack> curAudioTrackQueue = musicManager.scheduler.getCurrentQueuedTracksList();
             displayAllQueuedTracksList(channel, curPlayingTrack, curAudioTrackQueue);
         }else{
             channel.sendMessage("Your Queue Is Empty, Fill Me Up 😎").queue();
         }
     }
 
-    private void displayAllQueuedTracksList(TextChannel channel, AudioTrack curPlayingTrack, BlockingQueue<AudioTrack> curAudioTrackQueue){
+    private void displayAllQueuedTracksList(TextChannel channel, AudioTrack curPlayingTrack, Vector<AudioTrack> curAudioTrackQueue){
         int songCounter = 1;
         StringBuilder queueListBuilder = new StringBuilder();
         EmbedBuilder curPlayingEmbedBuilder = getNowPlaying(curPlayingTrack);
