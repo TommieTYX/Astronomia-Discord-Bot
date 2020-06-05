@@ -6,6 +6,7 @@ import astronomia.feature.musicplayer.MusicPlayer;
 import astronomia.models.Command;
 import astronomia.utils.MessageHelper;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.apache.maven.shared.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +40,13 @@ public class CommandProcessor {
                 break;
             case "continue" :
                 MusicPlayer.pauseTrack(event.getChannel(),false);
+                break;
+            case "volume" :
+                if(StringUtils.isBlank(userCommand.getMessage())){
+                    MusicPlayer.getVolume(event.getChannel(), null);
+                }else{
+                    MusicPlayer.getVolume(event.getChannel(), userCommand.getMessage());
+                }
                 break;
             default:
                 log.info("Command not found!");

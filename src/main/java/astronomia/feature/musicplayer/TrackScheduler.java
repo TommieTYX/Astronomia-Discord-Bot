@@ -61,4 +61,12 @@ public class TrackScheduler extends AudioEventAdapter {
   public void setPlayerPause(boolean isPause) {
     player.setPaused(isPause);
   }
+
+  public int getPlayerVolume() {
+    return player.getVolume();
+  }
+
+  public void setPlayerVolume(int volume) {
+    player.setVolume(volume);
+  }
 }

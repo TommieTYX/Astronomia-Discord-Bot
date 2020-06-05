@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
+import org.apache.maven.shared.utils.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -111,11 +112,21 @@ public class MusicPlayer {
         musicManager.scheduler.setPlayerPause(isPause);
         if(isPause) {
             channel.sendMessage("You mute me? Watch out!").queue();
-        }else if(!isPause){
+        }else {
             channel.sendMessage("Finally you remember me! 😎").queue();
-        }else{
-            channel.sendMessage("Unable to mute me NOOB! 😎").queue();
         }
     }
 
+    public static void getVolume(TextChannel channel, String volume) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        if (StringUtils.isBlank(volume)) {
+            int currentVolume = musicManager.scheduler.getPlayerVolume();
+            channel.sendMessage("😎 I am at volume: "+currentVolume+" (throw me some number to change my volume)").queue();
+        }else if(StringUtils.isNumeric(volume)) {
+            musicManager.scheduler.setPlayerVolume(Integer.parseInt(volume));
+            channel.sendMessage("😎 Setting myself volume: "+volume).queue();
+        }else{
+            channel.sendMessage("Do you know what is a number? Stopping giving me "+volume).queue();
+        }
+    }
 }
