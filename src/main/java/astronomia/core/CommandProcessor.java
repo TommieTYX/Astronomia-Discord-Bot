@@ -25,6 +25,7 @@ public class CommandProcessor {
                 Accessibility.join(event.getGuild(), event.getChannel(), event.getMember());
                 break;
             case "leave" :
+                MusicPlayer.stopAllTracks(event.getChannel());
                 Accessibility.leave(event.getGuild(), event.getChannel());
                 break;
             case "play" :
@@ -35,6 +36,7 @@ public class CommandProcessor {
                 break;
             default:
                 log.info("Command not found!");
+                event.getChannel().sendMessage("What are you talking about, you talking to me? Get your command right dumb dumb! 😎").queue();
         }
     }
 }

@@ -2,6 +2,7 @@ package astronomia.feature.musicplayer;
 
 import astronomia.feature.Accessibility;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -97,5 +98,11 @@ public class MusicPlayer {
         musicManager.scheduler.nextTrack();
 
         channel.sendMessage("Skipped to next track.").queue();
+    }
+
+    public static void stopAllTracks(TextChannel channel) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        musicManager.scheduler.emptyAllTrack();
+        channel.sendMessage("Stopping all tracks.").queue();
     }
 }
