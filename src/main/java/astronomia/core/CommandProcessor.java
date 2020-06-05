@@ -17,38 +17,41 @@ public class CommandProcessor {
 
     public void run(GuildMessageReceivedEvent event) {
         Command userCommand = MessageHelper.extractCommand(event.getMessage().getContentRaw());
-        switch (userCommand.getCommand().replace(DEFAULT_COMMAND_PREFIX, "")) {
-            case "ping" :
-                Fun.ping(event);
-                break;
-            case "join" :
-                Accessibility.join(event.getGuild(), event.getChannel(), event.getMember());
-                break;
-            case "leave" :
-                MusicPlayer.getInstance().stopAllTracks(event.getChannel());
-                Accessibility.leave(event.getGuild(), event.getChannel());
-                break;
-            case "play" :
-                MusicPlayer.getInstance().loadAndPlay(event.getGuild(), event.getChannel(), event.getMember(), userCommand.getMessage());
-                break;
-            case "skip" :
-                MusicPlayer.getInstance().skipTrack(event.getChannel());
-                break;
-            case "pause" :
-                MusicPlayer.getInstance().pauseTrack(event.getChannel(),true);
-                break;
-            case "continue" :
-                MusicPlayer.getInstance().pauseTrack(event.getChannel(),false);
-                break;
-            case "volume" :
-                MusicPlayer.getInstance().setVolume(event.getChannel(), userCommand.getMessage());
-                break;
-            case "queue" :
-                MusicPlayer.getInstance().getTracksList(event.getChannel());
-                break;
-            default:
-                log.info("Command not found!");
-                event.getChannel().sendMessage("What are you talking about, you talking to me? Get your command right dumb dumb! 😎").queue();
+        if(userCommand.getCommand().replace(DEFAULT_COMMAND_PREFIX, "").equals("join")){
+            Accessibility.join(event.getGuild(), event.getChannel(), event.getMember());
+        }else if (event.getGuild().getAudioManager().isConnected()){
+            switch (userCommand.getCommand().replace(DEFAULT_COMMAND_PREFIX, "")) {
+                case "ping":
+                    Fun.ping(event);
+                    break;
+                case "leave":
+                    MusicPlayer.getInstance().stopAllTracks(event.getChannel());
+                    Accessibility.leave(event.getGuild(), event.getChannel());
+                    break;
+                case "play":
+                    MusicPlayer.getInstance().loadAndPlay(event.getGuild(), event.getChannel(), event.getMember(), userCommand.getMessage());
+                    break;
+                case "skip":
+                    MusicPlayer.getInstance().skipTrack(event.getChannel());
+                    break;
+                case "pause":
+                    MusicPlayer.getInstance().pauseTrack(event.getChannel(), true);
+                    break;
+                case "continue":
+                    MusicPlayer.getInstance().pauseTrack(event.getChannel(), false);
+                    break;
+                case "volume":
+                    MusicPlayer.getInstance().setVolume(event.getChannel(), userCommand.getMessage());
+                    break;
+                case "queue":
+                    MusicPlayer.getInstance().getTracksList(event.getChannel());
+                    break;
+                default:
+                    log.info("Command not found!");
+                    event.getChannel().sendMessage("What are you talking about, you talking to me? Get your command right dumb dumb! 😎").queue();
+            }
+        }else{
+            event.getChannel().sendMessage("You have not call me yet! Hook me up & I can give you more service, you know the command (Join me) 😎").queue();
         }
     }
 }

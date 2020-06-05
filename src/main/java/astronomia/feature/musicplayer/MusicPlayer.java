@@ -14,8 +14,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.apache.maven.shared.utils.StringUtils;
 
+import java.awt.*;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
 public class MusicPlayer {
 
@@ -103,7 +106,11 @@ public class MusicPlayer {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         musicManager.scheduler.nextTrack();
 
-        channel.sendMessage("Skipped to next track.").queue();
+        if(musicManager.scheduler.getCurrentPlayingTrack() == null){
+            channel.sendMessage("You have no more songs to skip, go skip yourself 😎").queue();
+        }else {
+            channel.sendMessage("Skipped to next track.").queue();
+        }
     }
 
     public void stopAllTracks(TextChannel channel) {
