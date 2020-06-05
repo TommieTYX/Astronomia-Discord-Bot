@@ -48,10 +48,10 @@ public class CommandProcessor {
                     break;
                 default:
                     log.info("Command not found!");
-                    event.getChannel().sendMessage("What are you talking about, you talking to me? Get your command right dumb dumb! 😎").queue();
+                    event.getChannel().sendMessage("You talking to me? Get your command right dumb dumb! 😎").queue();
             }
         }else{
-            event.getChannel().sendMessage("You have not call me yet! Hook me up & I can give you more service, you know the command (Join me) 😎").queue();
+            event.getChannel().sendMessage("You have yet to call me! Hook me up & I can give you more services, you know the command (Join me) 😎").queue();
         }
     }
 }
