@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
+import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -15,7 +16,7 @@ import static astronomia.constant.ApplicationConstants.DEFAULT_MUSIC_PLAYER_VOLU
  */
 public class TrackScheduler extends AudioEventAdapter {
   private final AudioPlayer player;
-  private final BlockingQueue<AudioTrack> queue;
+  private final Vector<AudioTrack> queue;
 
   /**
    * @param player The audio player this scheduler uses
@@ -23,7 +24,7 @@ public class TrackScheduler extends AudioEventAdapter {
   public TrackScheduler(AudioPlayer player) {
     this.player = player;
     this.player.setVolume(DEFAULT_MUSIC_PLAYER_VOLUME);
-    this.queue = new LinkedBlockingQueue<>();
+    this.queue = new Vector<>();
   }
 
   /**
@@ -36,7 +37,7 @@ public class TrackScheduler extends AudioEventAdapter {
     // something is playing, it returns false and does nothing. In that case the player was already playing so this
     // track goes to the queue instead.
     if (!player.startTrack(track, true)) {
-      queue.offer(track);
+      queue.add(track);
     }
   }
 
@@ -46,7 +47,7 @@ public class TrackScheduler extends AudioEventAdapter {
   public void nextTrack() {
     // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
     // giving null to startTrack, which is a valid argument and will simply stop the player.
-    player.startTrack(queue.poll(), false);
+    player.startTrack(queue.remove(0), false);
   }
 
   @Override
@@ -57,6 +58,9 @@ public class TrackScheduler extends AudioEventAdapter {
     }
   }
 
+  /**
+   * clear all tracks
+   */
   public void emptyAllTrack() {
     player.destroy();
   }
@@ -71,5 +75,13 @@ public class TrackScheduler extends AudioEventAdapter {
 
   public void setPlayerVolume(int volume) {
     player.setVolume(volume);
+  }
+
+  public AudioTrack getCurrentPlayingTrack() {
+    return player.getPlayingTrack();
+  }
+
+  public Vector<AudioTrack> getCurrentQueuedTracksList() {
+    return queue;
   }
 }

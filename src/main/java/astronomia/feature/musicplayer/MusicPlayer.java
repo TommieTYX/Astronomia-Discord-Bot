@@ -1,6 +1,7 @@
 package astronomia.feature.musicplayer;
 
 import astronomia.feature.Accessibility;
+import astronomia.utils.MessageHelper;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -8,13 +9,18 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.apache.maven.shared.utils.StringUtils;
 
+import java.awt.*;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.BlockingQueue;
 
 public class MusicPlayer {
 
@@ -100,9 +106,13 @@ public class MusicPlayer {
 
     public void skipTrack(TextChannel channel) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
-        musicManager.scheduler.nextTrack();
 
-        channel.sendMessage("Skipped to next track.").queue();
+        if(musicManager.scheduler.getCurrentPlayingTrack() == null){
+            channel.sendMessage("You have no more songs to skip, go skip yourself 😎").queue();
+        }else {
+            musicManager.scheduler.nextTrack();
+            channel.sendMessage("Skipped to next track.").queue();
+        }
     }
 
     public void stopAllTracks(TextChannel channel) {
@@ -137,5 +147,65 @@ public class MusicPlayer {
 
     private boolean hasHitVolumeLimit(String volume) {
         return Integer.valueOf(volume) >= 0 && Integer.valueOf(volume) <= 150;
+    }
+
+    public void getTracksList(TextChannel channel) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        AudioTrack curPlayingTrack = musicManager.scheduler.getCurrentPlayingTrack();
+        if(curPlayingTrack != null){
+            Vector<AudioTrack> curAudioTrackQueue = musicManager.scheduler.getCurrentQueuedTracksList();
+            displayAllQueuedTracksList(channel, curPlayingTrack, curAudioTrackQueue);
+        }else{
+            channel.sendMessage("Your Queue Is Empty, Fill Me Up 😎").queue();
+        }
+    }
+
+    private void displayAllQueuedTracksList(TextChannel channel, AudioTrack curPlayingTrack, Vector<AudioTrack> curAudioTrackQueue){
+        int songCounter = 1;
+        StringBuilder queueListBuilder = new StringBuilder();
+        EmbedBuilder curPlayingEmbedBuilder = getNowPlaying(curPlayingTrack);
+        Iterator<AudioTrack> audioTrackIterator = curAudioTrackQueue.iterator();
+
+        while(audioTrackIterator.hasNext()){
+            AudioTrack currentAudioTrackIt = audioTrackIterator.next();
+            queueListBuilder.append(songCounter)
+                    .append(". ")
+                    .append(MessageHelper.convertTextToURL(currentAudioTrackIt.getInfo().title,
+                            currentAudioTrackIt.getInfo().uri))
+                    .append("\n Duration: ")
+                    .append(getTimeStamp(currentAudioTrackIt.getDuration()))
+                    .append("\n\n");
+            songCounter++;
+        }
+        if(StringUtils.isBlank(queueListBuilder.toString())){
+            curPlayingEmbedBuilder.addField("⏯ Queue", "Your Queue Is Empty, Fill Me Up 😎", false);
+        }else {
+            curPlayingEmbedBuilder.addField("⏯ Queue", queueListBuilder.toString(), false);
+        }
+        curPlayingEmbedBuilder.setColor(Color.RED);
+        channel.sendMessage(curPlayingEmbedBuilder.build()).queue();
+    }
+
+    private EmbedBuilder getNowPlaying(AudioTrack curPlayingTrack){
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("😎 Astronomia Music 😎");
+        embedBuilder.setAuthor("NOW PLAYING", curPlayingTrack.getInfo().uri, null);
+        embedBuilder.addField("🔊 Title", "["+curPlayingTrack.getInfo().title+"]("+curPlayingTrack.getInfo().uri+")", true);
+        embedBuilder.addField("🎤 Singer", curPlayingTrack.getInfo().author, true);
+        embedBuilder.addField("▶ Duration", (curPlayingTrack.getInfo().isStream) ? "Stream" : getTimeStamp(curPlayingTrack.getDuration()), false);
+        return embedBuilder;
+    }
+
+    private String getTimeStamp(long curDuration){
+        String curTrackMinutes = Long.toString((curDuration / (1000*60)) % 60);
+        String curTrackSeconds = Long.toString((curDuration / 1000) % 60);
+        StringBuilder sb = new StringBuilder();
+        if(curTrackMinutes.length() == 1){
+            curTrackMinutes ="0"+curTrackMinutes;
+        }
+        if(curTrackSeconds.length() == 1){
+            curTrackSeconds ="0"+curTrackSeconds;
+        }
+        return sb.append(curTrackMinutes).append(":").append(curTrackSeconds).toString();
     }
 }
