@@ -43,6 +43,9 @@ public class CommandProcessor {
             case "volume" :
                 MusicPlayer.getInstance().setVolume(event.getChannel(), userCommand.getMessage());
                 break;
+            case "queue" :
+                MusicPlayer.getInstance().getTracksList(event.getChannel());
+                break;
             default:
                 log.info("Command not found!");
                 event.getChannel().sendMessage("What are you talking about, you talking to me? Get your command right dumb dumb! 😎").queue();

@@ -57,6 +57,9 @@ public class TrackScheduler extends AudioEventAdapter {
     }
   }
 
+  /**
+   * clear all tracks
+   */
   public void emptyAllTrack() {
     player.destroy();
   }
@@ -71,5 +74,13 @@ public class TrackScheduler extends AudioEventAdapter {
 
   public void setPlayerVolume(int volume) {
     player.setVolume(volume);
+  }
+
+  public AudioTrack getCurrentPlayingTrack() {
+    return player.getPlayingTrack();
+  }
+
+  public BlockingQueue<AudioTrack> getCurrentQueuedTracksList() {
+    return queue;
   }
 }
