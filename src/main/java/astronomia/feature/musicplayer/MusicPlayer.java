@@ -115,6 +115,21 @@ public class MusicPlayer {
         }
     }
 
+    public void skipTrackAtIndex(TextChannel channel, String songIndexStr) {
+       if(StringUtils.isNumeric(songIndexStr)){
+            int songIndex = Integer.parseInt(songIndexStr) - 1;
+            GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+            AudioTrack removedTrack = musicManager.scheduler.removeTrackFromCurrentQueueAtIndex(songIndex);
+            if(removedTrack != null){
+                channel.sendMessage("⏭ Removed "+removedTrack.getInfo().title).queue();
+            }else{
+                channel.sendMessage("No Such Song Track Id To Be Removed Bruhhh! 😎").queue();
+            }
+        }else{
+            channel.sendMessage("Invalid Song Track Id Given Bruhhh! 😎").queue();
+        }
+    }
+
     public void stopAllTracks(TextChannel channel) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         musicManager.scheduler.emptyAllTrack();
@@ -201,9 +216,11 @@ public class MusicPlayer {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("😎 Astronomia Music 😎");
         embedBuilder.setAuthor("NOW PLAYING", curPlayingTrack.getInfo().uri, null);
-        embedBuilder.addField("🔊 Title", "["+curPlayingTrack.getInfo().title+"]("+curPlayingTrack.getInfo().uri+")", true);
+        embedBuilder.addField("🔊 Title", MessageHelper.convertTextToURL(curPlayingTrack.getInfo().title,
+                curPlayingTrack.getInfo().uri), true);
         embedBuilder.addField("🎤 Singer", curPlayingTrack.getInfo().author, true);
-        embedBuilder.addField("▶ Duration", (curPlayingTrack.getInfo().isStream) ? "Stream" : getTimeStamp(curPlayingTrack.getDuration()), false);
+        embedBuilder.addField("▶ Duration", (curPlayingTrack.getInfo().isStream)
+                ? "Stream" : getTimeStamp(curPlayingTrack.getDuration()), true);
         return embedBuilder;
     }
 
@@ -218,5 +235,16 @@ public class MusicPlayer {
             curTrackSeconds ="0"+curTrackSeconds;
         }
         return sb.append(curTrackMinutes).append(":").append(curTrackSeconds).toString();
+    }
+
+    public void pushSongPosition(TextChannel channel, int songCurrentPosition, int songNewPosition){
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        AudioTrack removedTrack = musicManager.scheduler.removeTrackFromCurrentQueueAtIndex(songCurrentPosition-1);
+        if(removedTrack != null){
+            musicManager.scheduler.pushSelectedTrackToIndex(removedTrack,songNewPosition-1);
+            channel.sendMessage("⏭ Pushing Song To Front of The Queue: "+removedTrack.getInfo().title).queue();
+        }else{
+            channel.sendMessage("No Such Song Track Id To Be Removed Bruhhh! 😎").queue();
+        }
     }
 }

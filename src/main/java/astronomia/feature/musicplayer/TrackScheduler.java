@@ -84,4 +84,15 @@ public class TrackScheduler extends AudioEventAdapter {
   public Vector<AudioTrack> getCurrentQueuedTracksList() {
     return queue;
   }
+
+  public AudioTrack removeTrackFromCurrentQueueAtIndex(int songIndex) {
+    if(queue.size() > 0 && queue.size() > songIndex){
+      return queue.remove(songIndex);
+    }
+    return null;
+  }
+
+  public void pushSelectedTrackToIndex(AudioTrack selectedTrack, int songNewIndex) {
+    queue.insertElementAt(selectedTrack,songNewIndex);
+  }
 }
