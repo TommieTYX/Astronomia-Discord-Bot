@@ -1,6 +1,6 @@
-package astronomia.feature.musicplayer;
+package astronomia.modules.musicplayer;
 
-import astronomia.feature.Accessibility;
+import astronomia.modules.Accessibility;
 import astronomia.utils.MessageHelper;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;

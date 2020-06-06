@@ -1,8 +1,8 @@
 package astronomia.core;
 
-import astronomia.feature.Accessibility;
-import astronomia.feature.Fun;
-import astronomia.feature.musicplayer.MusicPlayer;
+import astronomia.modules.Accessibility;
+import astronomia.modules.Fun;
+import astronomia.modules.musicplayer.MusicPlayer;
 import astronomia.models.Command;
 import astronomia.utils.CommonUtils;
 import astronomia.utils.MessageHelper;

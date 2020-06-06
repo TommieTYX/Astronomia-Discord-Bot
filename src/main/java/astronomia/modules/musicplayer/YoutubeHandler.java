@@ -1,4 +1,4 @@
-package astronomia.feature.musicplayer;
+package astronomia.modules.musicplayer;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
