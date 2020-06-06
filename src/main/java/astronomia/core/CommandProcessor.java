@@ -6,6 +6,7 @@ import astronomia.feature.musicplayer.MusicPlayer;
 import astronomia.models.Command;
 import astronomia.utils.MessageHelper;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.apache.maven.shared.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,11 @@ public class CommandProcessor {
                     Accessibility.leave(event.getGuild(), event.getChannel());
                     break;
                 case "skip":
-                    MusicPlayer.getInstance().skipTrack(event.getChannel());
+                    if(StringUtils.isBlank(userCommand.getMessage())) {
+                        MusicPlayer.getInstance().skipTrack(event.getChannel());
+                    }else {
+                        MusicPlayer.getInstance().skipTrackAtIndex(event.getChannel(), userCommand.getMessage());
+                    }
                     break;
                 case "pause":
                     MusicPlayer.getInstance().pauseTrack(event.getChannel(), true);
