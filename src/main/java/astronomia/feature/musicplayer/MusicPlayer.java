@@ -13,25 +13,28 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.maven.shared.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.BlockingQueue;
+import java.io.IOException;
+import java.util.*;
 
 public class MusicPlayer {
+    private static final Logger log = LoggerFactory.getLogger(MusicPlayer.class);
 
-    private static AudioPlayerManager playerManager;
-    private static Map<Long, GuildMusicManager> musicManagers;
+    private final AudioPlayerManager playerManager;
+    private final Map<Long, GuildMusicManager> musicManagers;
+    private final YoutubeHandler youtube;
 
     private static MusicPlayer musicPlayer = null;
 
     private MusicPlayer() {
         musicManagers = new HashMap<>();
         playerManager = new DefaultAudioPlayerManager();
+        youtube = new YoutubeHandler();
         AudioSourceManagers.registerRemoteSources(playerManager);
         AudioSourceManagers.registerLocalSource(playerManager);
     }
@@ -67,10 +70,23 @@ public class MusicPlayer {
         musicManager.scheduler.queue(track);
     }
 
-    public void loadAndPlay(Guild guild, TextChannel channel, Member member, final String trackUrl) {
+    public void loadAndPlay(Guild guild, TextChannel channel, Member member, String userInput) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
-        playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
+        final String url;
+
+        if (!UrlValidator.getInstance().isValid(userInput)) {
+            try {
+                url = youtube.getUrlBySearchTerms(userInput);
+            } catch (IOException e) {
+                log.error("Error calling youtube data api. Error:{}", e.getMessage());
+                return;
+            }
+        } else {
+            url = userInput;
+        }
+
+        playerManager.loadItemOrdered(musicManager, url, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 channel.sendMessage("Adding to queue " + track.getInfo().title).queue();
@@ -94,7 +110,7 @@ public class MusicPlayer {
 
             @Override
             public void noMatches() {
-                channel.sendMessage("Nothing found by " + trackUrl).queue();
+                channel.sendMessage("Nothing found by " + userInput).queue();
             }
 
             @Override
