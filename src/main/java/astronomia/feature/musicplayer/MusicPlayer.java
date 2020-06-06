@@ -163,6 +163,7 @@ public class MusicPlayer {
     private void displayAllQueuedTracksList(TextChannel channel, AudioTrack curPlayingTrack, Vector<AudioTrack> curAudioTrackQueue){
         int songCounter = 1;
         StringBuilder queueListBuilder = new StringBuilder();
+        String prevQueueListStr = "";
         EmbedBuilder curPlayingEmbedBuilder = getNowPlaying(curPlayingTrack);
         Iterator<AudioTrack> audioTrackIterator = curAudioTrackQueue.iterator();
 
@@ -175,12 +176,22 @@ public class MusicPlayer {
                     .append("\n Duration: ")
                     .append(getTimeStamp(currentAudioTrackIt.getDuration()))
                     .append("\n\n");
-            songCounter++;
+            if(queueListBuilder.toString().length() <= 1000) {
+                //Max length in Field is 1024 but giving 24 Char for below Message To Prevent OutOfRange error
+                songCounter++;
+                prevQueueListStr = queueListBuilder.toString();
+            }else{
+                break;
+            }
         }
+
         if(StringUtils.isBlank(queueListBuilder.toString())){
             curPlayingEmbedBuilder.addField("⏯ Queue", "Your Queue Is Empty, Fill Me Up 😎", false);
-        }else {
+        }else if(queueListBuilder.toString().length() <= 1024){
             curPlayingEmbedBuilder.addField("⏯ Queue", queueListBuilder.toString(), false);
+        }else{
+            prevQueueListStr += "And "+(curAudioTrackQueue.size() - songCounter)+" Other Songs In Queue! 😎\n\n";
+            curPlayingEmbedBuilder.addField("⏯ Queue", prevQueueListStr, false);
         }
         curPlayingEmbedBuilder.setColor(Color.RED);
         channel.sendMessage(curPlayingEmbedBuilder.build()).queue();

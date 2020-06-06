@@ -19,6 +19,8 @@ public class CommandProcessor {
         Command userCommand = MessageHelper.extractCommand(event.getMessage().getContentRaw());
         if(userCommand.getCommand().replace(DEFAULT_COMMAND_PREFIX, "").equals("join")){
             Accessibility.join(event.getGuild(), event.getChannel(), event.getMember());
+        }else if(userCommand.getCommand().replace(DEFAULT_COMMAND_PREFIX, "").equals("play")){
+            MusicPlayer.getInstance().loadAndPlay(event.getGuild(), event.getChannel(), event.getMember(), userCommand.getMessage());
         }else if (event.getGuild().getAudioManager().isConnected()){
             switch (userCommand.getCommand().replace(DEFAULT_COMMAND_PREFIX, "")) {
                 case "ping":
@@ -27,9 +29,6 @@ public class CommandProcessor {
                 case "leave":
                     MusicPlayer.getInstance().stopAllTracks(event.getChannel());
                     Accessibility.leave(event.getGuild(), event.getChannel());
-                    break;
-                case "play":
-                    MusicPlayer.getInstance().loadAndPlay(event.getGuild(), event.getChannel(), event.getMember(), userCommand.getMessage());
                     break;
                 case "skip":
                     MusicPlayer.getInstance().skipTrack(event.getChannel());
