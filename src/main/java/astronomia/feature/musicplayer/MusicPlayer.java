@@ -236,4 +236,15 @@ public class MusicPlayer {
         }
         return sb.append(curTrackMinutes).append(":").append(curTrackSeconds).toString();
     }
+
+    public void pushSongPosition(TextChannel channel, int songCurrentPosition, int songNewPosition){
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        AudioTrack removedTrack = musicManager.scheduler.removeTrackFromCurrentQueueAtIndex(songCurrentPosition-1);
+        if(removedTrack != null){
+            musicManager.scheduler.pushSelectedTrackToIndex(removedTrack,songNewPosition-1);
+            channel.sendMessage("⏭ Pushing Song To Front of The Queue: "+removedTrack.getInfo().title).queue();
+        }else{
+            channel.sendMessage("No Such Song Track Id To Be Removed Bruhhh! 😎").queue();
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package astronomia.utils;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.apache.maven.shared.utils.StringUtils;
 
 public class CommonUtils {
 
@@ -12,5 +13,19 @@ public class CommonUtils {
             name = event.getMember().getEffectiveName();       //This will either use the Member's nickname if they have one,
         }
         return name;
+    }
+
+    public static boolean isNotBlankAndCheckNumeric(String currentStr, boolean checkNumeric){
+        if(!StringUtils.isBlank(currentStr)) {
+            if (checkNumeric){
+                if(StringUtils.isNumeric(currentStr)) {
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

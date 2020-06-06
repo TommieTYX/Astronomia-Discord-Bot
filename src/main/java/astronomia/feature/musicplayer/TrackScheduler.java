@@ -91,4 +91,8 @@ public class TrackScheduler extends AudioEventAdapter {
     }
     return null;
   }
+
+  public void pushSelectedTrackToIndex(AudioTrack selectedTrack, int songNewIndex) {
+    queue.insertElementAt(selectedTrack,songNewIndex);
+  }
 }
