@@ -120,7 +120,7 @@ public class MusicPlayer {
         });
     }
 
-    public void skipTrack(TextChannel channel) {
+    public void skipTrack(TextChannel channel, boolean isRepeat) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         if (musicManager.scheduler.getCurrentPlayingTrack() == null) {
@@ -129,7 +129,7 @@ public class MusicPlayer {
             musicManager.scheduler.nextTrack();
             if (musicManager.scheduler.getCurrentPlayingTrack() == null) {
                 channel.sendMessage("That was your last song man. Bye 😎").queue();
-            } else {
+            } else if (!isRepeat) {
                 channel.sendMessage("Skipped to next track.").queue();
             }
         }
@@ -265,6 +265,18 @@ public class MusicPlayer {
             channel.sendMessage("⏭ Pushing Song To Front of The Queue: "+removedTrack.getInfo().title).queue();
         }else{
             channel.sendMessage("No Such Song Track Id To Be Removed Bruhhh! 😎").queue();
+        }
+    }
+
+    public void repeatSong(TextChannel channel){
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        AudioTrack curPlayingTrack = musicManager.scheduler.getCurrentPlayingTrack();
+        if(curPlayingTrack != null){
+            musicManager.scheduler.pushSelectedTrackToIndex(curPlayingTrack.makeClone(),0);
+            this.skipTrack(channel, true);
+            channel.sendMessage("🔁 Replaying "+curPlayingTrack.getInfo().title+" now!").queue();
+        }else{
+            channel.sendMessage("You mad bruh? There's no song playing currently for me to replay!").queue();
         }
     }
 }
