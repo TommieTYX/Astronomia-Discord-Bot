@@ -1,16 +1,16 @@
 package astronomia.utils;
 
-import astronomia.models.Command;
+import astronomia.models.UserCommand;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.Optional;
 
 public class MessageHelper {
 
-    public static Command extractCommand(String msg) {
+    public static UserCommand extractUserCommand(String msg) {
         String[] msgArr = msg.trim().split(" ", 2);
 
-        return Command.builder()
+        return UserCommand.builder()
                 .command(msgArr[0])
                 .message(msgArr.length > 1 ? Optional.ofNullable(msgArr[1]).orElse(null) : null).build();
     }

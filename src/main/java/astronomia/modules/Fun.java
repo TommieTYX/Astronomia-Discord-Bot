@@ -1,4 +1,4 @@
-package astronomia.feature;
+package astronomia.modules;
 
 import astronomia.utils.MessageHelper;
 import net.dv8tion.jda.api.entities.MessageChannel;

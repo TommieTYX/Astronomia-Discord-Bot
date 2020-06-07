@@ -1,31 +1,31 @@
 package astronomia.core;
 
-import astronomia.utils.MessageHelper;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import astronomia.core.commands.Join;
+import astronomia.core.commands.Leave;
+import astronomia.core.commands.fun.Ping;
+import astronomia.core.commands.musicplayer.*;
+import com.jagrosh.jdautilities.command.CommandClient;
+import com.jagrosh.jdautilities.command.CommandClientBuilder;
 
 import static astronomia.constant.ApplicationConstants.DEFAULT_COMMAND_PREFIX;
 
-public class CommandListener extends ListenerAdapter {
+public class CommandListener {
 
-    private CommandProcessor commandProcessor = new CommandProcessor();
+    public CommandClient build() {
+        CommandClientBuilder commandClientBuilder = new CommandClientBuilder();
+        commandClientBuilder.setPrefix(DEFAULT_COMMAND_PREFIX);
+        commandClientBuilder.setHelpWord("help");
+        commandClientBuilder.setOwnerId("223395701197897728");
 
-    @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-        Message message = event.getMessage();
-        String msg = message.getContentDisplay();
+        loadCommands(commandClientBuilder);
 
-        if (!event.getAuthor().isBot()) {
-            if (isCommand(msg)) {
-                commandProcessor.run(event);
-            }
-        }
-
-        super.onGuildMessageReceived(event);
+        return commandClientBuilder.build();
     }
 
-    private boolean isCommand(String msg) {
-        return !msg.isBlank() && MessageHelper.extractCommand(msg).getCommand().startsWith(DEFAULT_COMMAND_PREFIX);
+    private void loadCommands(CommandClientBuilder commandClientBuilder) {
+        commandClientBuilder.addCommands(
+                new Ping(), new Join(), new Leave(),
+                new Play(), new Pause(), new Queue(), new Resume(), new Push(), new Skip(), new Volume()
+        );
     }
 }
