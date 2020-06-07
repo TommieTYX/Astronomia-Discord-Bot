@@ -31,7 +31,7 @@ public class Accessibility {
         // Connects to the channel.
         audioManager.openAudioConnection(connectedChannel);
         // Only send once when first connect to channel
-        if (!audioManager.isConnected()){
+        if (!audioManager.isConnected()) {
             channel.sendMessage("HOLLAAA! I am connected to the voice channel! 😎").queue();
         }
     }
@@ -40,11 +40,11 @@ public class Accessibility {
         // Gets the channel in which the bot is currently connected.
         VoiceChannel connectedChannel = guild.getSelfMember().getVoiceState().getChannel();
         // Checks if the bot is connected to a voice channel.
-        if(connectedChannel == null) {
+        if (connectedChannel == null) {
             // Get slightly fed up at the user.
             channel.sendMessage("I am not connected to a voice channel!").queue();
             return;
-        }else{
+        } else {
             MusicPlayer.getInstance().stopAllTracks(channel);
         }
         // Disconnect from the channel.

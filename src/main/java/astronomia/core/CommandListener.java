@@ -24,7 +24,7 @@ public class CommandListener {
 
     private void loadCommands(CommandClientBuilder commandClientBuilder) {
         commandClientBuilder.addCommands(
-                new Ping(), new Join(), new Leave(),
+                new Ping(), new Join(), new Leave(), new Repeat(), new SongHistory(),
                 new Play(), new Pause(), new Queue(), new Resume(), new Push(), new Skip(), new Volume()
         );
     }
