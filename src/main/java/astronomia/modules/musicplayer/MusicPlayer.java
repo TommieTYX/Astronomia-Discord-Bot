@@ -267,23 +267,19 @@ public class MusicPlayer {
                     .append("\n Duration: ")
                     .append(getTimeStamp(currentAudioTrackIt.getDuration()))
                     .append("\n\n");
-            System.out.println("1 JW Debug list size:"+curSongList.size()+" counter:"+songCounter);
             if (songListBuilder.toString().length() <= (textLimit-30)) {
                 //Max length in Field/Description but giving 24 Char for below Message To Prevent OutOfRange error
                 songCounter++;
-                System.out.println("~JW Debug list size:"+curSongList.size()+" added counter:"+songCounter);
                 prevListStr = songListBuilder.toString();
             } else {
                 break;
             }
-            System.out.println("2 JW Debug looping list size:"+curSongList.size()+" counter:"+songCounter+"\n");
         }
         if (StringUtils.isBlank(songListBuilder.toString())) {
             return null;
         } else if(songListBuilder.toString().length() <= textLimit) {
             return songListBuilder.toString();
         } else {
-            System.out.println("JW Debug list size:"+curSongList.size()+" counter:"+songCounter);
             prevListStr += "And "+(curSongList.size() - (songCounter-1))+" Other Songs In The List! 😎";
            return prevListStr;
         }
