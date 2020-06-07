@@ -2,6 +2,7 @@ package astronomia.core.commands.musicplayer;
 
 import astronomia.models.UserCommand;
 import astronomia.modules.musicplayer.MusicPlayer;
+import astronomia.utils.CommonUtils;
 import astronomia.utils.MessageHelper;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
@@ -16,12 +17,16 @@ public class Volume extends Command {
 
     @Override
     protected void execute(CommandEvent commandEvent) {
-        UserCommand userCommand = MessageHelper.extractUserCommand(commandEvent.getMessage().getContentRaw());
+        boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
+                (commandEvent.getTextChannel(), commandEvent.getMember());
+        if (isUserConnectedToChannel) {
+            UserCommand userCommand = MessageHelper.extractUserCommand(commandEvent.getMessage().getContentRaw());
 
-        if (commandEvent.getGuild().getAudioManager().isConnected()) {
-            MusicPlayer.getInstance().setVolume(commandEvent.getTextChannel(), userCommand.getMessage());
-        } else {
-            commandEvent.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL);
+            if (commandEvent.getGuild().getAudioManager().isConnected()) {
+                MusicPlayer.getInstance().setVolume(commandEvent.getTextChannel(), userCommand.getMessage());
+            } else {
+                commandEvent.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL);
+            }
         }
     }
 }

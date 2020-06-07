@@ -1,5 +1,6 @@
 package astronomia.modules;
 
+import astronomia.modules.musicplayer.MusicPlayer;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -43,6 +44,8 @@ public class Accessibility {
             // Get slightly fed up at the user.
             channel.sendMessage("I am not connected to a voice channel!").queue();
             return;
+        }else{
+            MusicPlayer.getInstance().stopAllTracks(channel);
         }
         // Disconnect from the channel.
         guild.getAudioManager().closeAudioConnection();
