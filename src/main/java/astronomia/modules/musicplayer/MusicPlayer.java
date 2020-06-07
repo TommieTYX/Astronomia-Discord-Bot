@@ -126,7 +126,7 @@ public class MusicPlayer {
         if (musicManager.scheduler.getCurrentPlayingTrack() == null) {
             channel.sendMessage("You have no more songs to skip, go skip yourself 😎").queue();
          }else {
-            musicManager.scheduler.nextTrack();
+            musicManager.scheduler.nextTrack(isRepeat);
             if (musicManager.scheduler.getCurrentPlayingTrack() == null) {
                 channel.sendMessage("That was your last song man. Bye 😎").queue();
             } else if (!isRepeat) {
@@ -195,44 +195,16 @@ public class MusicPlayer {
         }
     }
 
-    private void displayAllQueuedTracksList(TextChannel channel, AudioTrack curPlayingTrack, Vector<AudioTrack> curAudioTrackQueue){
-        int songCounter = 1;
-        StringBuilder queueListBuilder = new StringBuilder();
-        String prevQueueListStr = "";
+    private void displayAllQueuedTracksList(TextChannel channel, AudioTrack curPlayingTrack, Vector<AudioTrack> curAudioTrackQueue) {
         EmbedBuilder curPlayingEmbedBuilder = getNowPlaying(curPlayingTrack);
-        Iterator<AudioTrack> audioTrackIterator = curAudioTrackQueue.iterator();
-
-        while(audioTrackIterator.hasNext()){
-            AudioTrack currentAudioTrackIt = audioTrackIterator.next();
-            queueListBuilder.append(songCounter)
-                    .append(". ")
-                    .append(MessageHelper.convertTextToURL(currentAudioTrackIt.getInfo().title,
-                            currentAudioTrackIt.getInfo().uri))
-                    .append("\n Duration: ")
-                    .append(getTimeStamp(currentAudioTrackIt.getDuration()))
-                    .append("\n\n");
-            if(queueListBuilder.toString().length() <= 1000) {
-                //Max length in Field is 1024 but giving 24 Char for below Message To Prevent OutOfRange error
-                songCounter++;
-                prevQueueListStr = queueListBuilder.toString();
-            }else{
-                break;
-            }
-        }
-
-        if(StringUtils.isBlank(queueListBuilder.toString())){
-            curPlayingEmbedBuilder.addField("⏯ Queue", "Your Queue Is Empty, Fill Me Up 😎", false);
-        }else if(queueListBuilder.toString().length() <= 1024){
-            curPlayingEmbedBuilder.addField("⏯ Queue", queueListBuilder.toString(), false);
-        }else{
-            prevQueueListStr += "And "+(curAudioTrackQueue.size() - songCounter)+" Other Songs In Queue! 😎\n\n";
-            curPlayingEmbedBuilder.addField("⏯ Queue", prevQueueListStr, false);
-        }
+        String returnedListStr = constructSongListDetails(channel,curAudioTrackQueue,1024);
+        curPlayingEmbedBuilder.addField("⏯ Queue", (!StringUtils.isBlank(returnedListStr) ?
+                returnedListStr : "Your Queue Is Empty, Fill Me Up \uD83D\uDE0E") , false);
         curPlayingEmbedBuilder.setColor(Color.RED);
         channel.sendMessage(curPlayingEmbedBuilder.build()).queue();
     }
 
-    private EmbedBuilder getNowPlaying(AudioTrack curPlayingTrack){
+    private EmbedBuilder getNowPlaying(AudioTrack curPlayingTrack) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("😎 Astronomia Music 😎");
         embedBuilder.setAuthor("NOW PLAYING", curPlayingTrack.getInfo().uri, null);
@@ -244,23 +216,23 @@ public class MusicPlayer {
         return embedBuilder;
     }
 
-    private String getTimeStamp(long curDuration){
+    private String getTimeStamp(long curDuration) {
         String curTrackMinutes = Long.toString((curDuration / (1000*60)) % 60);
         String curTrackSeconds = Long.toString((curDuration / 1000) % 60);
         StringBuilder sb = new StringBuilder();
-        if(curTrackMinutes.length() == 1){
+        if (curTrackMinutes.length() == 1) {
             curTrackMinutes ="0"+curTrackMinutes;
         }
-        if(curTrackSeconds.length() == 1){
+        if (curTrackSeconds.length() == 1) {
             curTrackSeconds ="0"+curTrackSeconds;
         }
         return sb.append(curTrackMinutes).append(":").append(curTrackSeconds).toString();
     }
 
-    public void pushSongPosition(TextChannel channel, int songCurrentPosition, int songNewPosition){
+    public void pushSongPosition(TextChannel channel, int songCurrentPosition, int songNewPosition) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         AudioTrack removedTrack = musicManager.scheduler.removeTrackFromCurrentQueueAtIndex(songCurrentPosition-1);
-        if(removedTrack != null){
+        if (removedTrack != null) {
             musicManager.scheduler.pushSelectedTrackToIndex(removedTrack,songNewPosition-1);
             channel.sendMessage("⏭ Pushing Song To Front of The Queue: "+removedTrack.getInfo().title).queue();
         }else{
@@ -268,15 +240,64 @@ public class MusicPlayer {
         }
     }
 
-    public void repeatSong(TextChannel channel){
+    public void repeatSong(TextChannel channel) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         AudioTrack curPlayingTrack = musicManager.scheduler.getCurrentPlayingTrack();
-        if(curPlayingTrack != null){
+        if (curPlayingTrack != null) {
             musicManager.scheduler.pushSelectedTrackToIndex(curPlayingTrack.makeClone(),0);
             this.skipTrack(channel, true);
             channel.sendMessage("🔁 Replaying "+curPlayingTrack.getInfo().title+" now!").queue();
-        }else{
+        } else {
             channel.sendMessage("You mad bruh? There's no song playing currently for me to replay!").queue();
         }
+    }
+
+    private String constructSongListDetails(TextChannel channel, Vector<AudioTrack> curSongList, int textLimit) {
+        int songCounter = 1;
+        String prevListStr = "";
+        StringBuilder songListBuilder = new StringBuilder();
+        Iterator<AudioTrack> audioTrackIterator = curSongList.iterator();
+
+        while (audioTrackIterator.hasNext()) {
+            AudioTrack currentAudioTrackIt = audioTrackIterator.next();
+            songListBuilder.append(songCounter)
+                    .append(". ")
+                    .append(MessageHelper.convertTextToURL(currentAudioTrackIt.getInfo().title,
+                            currentAudioTrackIt.getInfo().uri))
+                    .append("\n Duration: ")
+                    .append(getTimeStamp(currentAudioTrackIt.getDuration()))
+                    .append("\n\n");
+            System.out.println("1 JW Debug list size:"+curSongList.size()+" counter:"+songCounter);
+            if (songListBuilder.toString().length() <= (textLimit-30)) {
+                //Max length in Field/Description but giving 24 Char for below Message To Prevent OutOfRange error
+                songCounter++;
+                System.out.println("~JW Debug list size:"+curSongList.size()+" added counter:"+songCounter);
+                prevListStr = songListBuilder.toString();
+            } else {
+                break;
+            }
+            System.out.println("2 JW Debug looping list size:"+curSongList.size()+" counter:"+songCounter+"\n");
+        }
+        if (StringUtils.isBlank(songListBuilder.toString())) {
+            return null;
+        } else if(songListBuilder.toString().length() <= textLimit) {
+            return songListBuilder.toString();
+        } else {
+            System.out.println("JW Debug list size:"+curSongList.size()+" counter:"+songCounter);
+            prevListStr += "And "+(curSongList.size() - (songCounter-1))+" Other Songs In The List! 😎";
+           return prevListStr;
+        }
+    }
+
+    public void getSongHistory(TextChannel channel) {
+        EmbedBuilder curPlayingEmbedBuilder = new EmbedBuilder();
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        Vector<AudioTrack> curSongHistoryList = musicManager.scheduler.getSongHistory();
+        curPlayingEmbedBuilder.setAuthor("😎 Your History of Recent 20 Songs Played 😎");
+        String returnedListStr = constructSongListDetails(channel,curSongHistoryList,2048);
+        curPlayingEmbedBuilder.setDescription(!StringUtils.isBlank(returnedListStr) ?
+                returnedListStr : "You have not listen to any song yet!");
+        curPlayingEmbedBuilder.setColor(Color.GREEN);
+        channel.sendMessage(curPlayingEmbedBuilder.build()).queue();
     }
 }
