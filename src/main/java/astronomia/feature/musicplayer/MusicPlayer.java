@@ -107,11 +107,15 @@ public class MusicPlayer {
     public void skipTrack(TextChannel channel) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
-        if(musicManager.scheduler.getCurrentPlayingTrack() == null){
+        if (musicManager.scheduler.getCurrentPlayingTrack() == null) {
             channel.sendMessage("You have no more songs to skip, go skip yourself 😎").queue();
-        }else {
+         }else {
             musicManager.scheduler.nextTrack();
-            channel.sendMessage("Skipped to next track.").queue();
+            if (musicManager.scheduler.getCurrentPlayingTrack() == null) {
+                channel.sendMessage("That was your last song man. Bye 😎").queue();
+            } else {
+                channel.sendMessage("Skipped to next track.").queue();
+            }
         }
     }
 
