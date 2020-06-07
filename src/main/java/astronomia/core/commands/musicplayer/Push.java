@@ -17,17 +17,21 @@ public class Push extends Command {
 
     @Override
     protected void execute(CommandEvent commandEvent) {
-        UserCommand userCommand = MessageHelper.extractUserCommand(commandEvent.getMessage().getContentRaw());
+        boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
+                (commandEvent.getTextChannel(), commandEvent.getMember());
+        if (isUserConnectedToChannel) {
+            UserCommand userCommand = MessageHelper.extractUserCommand(commandEvent.getMessage().getContentRaw());
 
-        if (commandEvent.getGuild().getAudioManager().isConnected()) {
-            if(CommonUtils.isNotBlankAndCheckNumeric(userCommand.getMessage(), true)) {
-                MusicPlayer.getInstance().pushSongPosition(commandEvent.getTextChannel(),
-                        Integer.parseInt(userCommand.getMessage()), 1);
-            }else{
-                commandEvent.reply("Give me the correct song Id to push, you dumb dumb! 😎");
+            if (commandEvent.getGuild().getAudioManager().isConnected()) {
+                if (CommonUtils.isNotBlankAndCheckNumeric(userCommand.getMessage(), true)) {
+                    MusicPlayer.getInstance().pushSongPosition(commandEvent.getTextChannel(),
+                            Integer.parseInt(userCommand.getMessage()), 1);
+                } else {
+                    commandEvent.reply("Give me the correct song Id to push, you dumb dumb! 😎");
+                }
+            } else {
+                commandEvent.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL);
             }
-        } else {
-            commandEvent.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL);
         }
     }
 }

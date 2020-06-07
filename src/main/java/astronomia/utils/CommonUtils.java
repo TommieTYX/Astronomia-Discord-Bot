@@ -1,5 +1,8 @@
 package astronomia.utils;
 
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.maven.shared.utils.StringUtils;
 
@@ -27,5 +30,15 @@ public class CommonUtils {
             return true;
         }
         return false;
+    }
+
+    public static boolean isCurrentUserConnectedToChannel(TextChannel channel, Member member) {
+        VoiceChannel connectedChannel = member.getVoiceState().getChannel();
+        // Checks if they are in a channel
+        if (connectedChannel == null) {
+            channel.sendMessage("You are not connected to a voice channel!").queue();
+            return false;
+        }
+        return true;
     }
 }
