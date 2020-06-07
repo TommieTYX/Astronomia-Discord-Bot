@@ -2,6 +2,7 @@ package astronomia.core.commands;
 
 import astronomia.modules.Accessibility;
 import astronomia.modules.musicplayer.MusicPlayer;
+import astronomia.utils.CommonUtils;
 import astronomia.utils.MessageHelper;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
@@ -14,7 +15,10 @@ public class Leave extends Command {
 
     @Override
     protected void execute(CommandEvent commandEvent) {
-        MusicPlayer.getInstance().stopAllTracks(commandEvent.getTextChannel());
-        Accessibility.leave(commandEvent.getGuild(), commandEvent.getTextChannel());
+        boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
+                (commandEvent.getTextChannel(), commandEvent.getMember());
+        if (isUserConnectedToChannel) {
+            Accessibility.leave(commandEvent.getGuild(), commandEvent.getTextChannel());
+        }
     }
 }
