@@ -68,6 +68,7 @@ public class MusicPlayer {
                              GuildMusicManager musicManager, AudioTrack track) {
         Accessibility.join(guild, channel, member);
         musicManager.scheduler.queue(track);
+        getTracksList(channel);
     }
 
     public void loadAndPlay(Guild guild, TextChannel channel, Member member, String userInput) {
@@ -131,6 +132,7 @@ public class MusicPlayer {
                 channel.sendMessage("That was your last song man. Bye 😎").queue();
             } else if (!isRepeat) {
                 channel.sendMessage("Skipped to next track.").queue();
+                getTracksList(channel);
             }
         }
     }
@@ -142,6 +144,7 @@ public class MusicPlayer {
             AudioTrack removedTrack = musicManager.scheduler.removeTrackFromCurrentQueueAtIndex(songIndex);
             if(removedTrack != null){
                 channel.sendMessage("⏭ Removed "+removedTrack.getInfo().title).queue();
+                getTracksList(channel);
             }else{
                 channel.sendMessage("No Such Song Track Id To Be Removed Bruhhh! 😎").queue();
             }
@@ -163,6 +166,7 @@ public class MusicPlayer {
             channel.sendMessage("You mute me? Watch out!").queue();
         }else {
             channel.sendMessage("Finally you remember me! 😎").queue();
+            getTracksList(channel);
         }
     }
 
@@ -235,6 +239,7 @@ public class MusicPlayer {
         if (removedTrack != null) {
             musicManager.scheduler.pushSelectedTrackToIndex(removedTrack,songNewPosition-1);
             channel.sendMessage("⏭ Pushing Song To Front of The Queue: "+removedTrack.getInfo().title).queue();
+            getTracksList(channel);
         }else{
             channel.sendMessage("No Such Song Track Id To Be Removed Bruhhh! 😎").queue();
         }
