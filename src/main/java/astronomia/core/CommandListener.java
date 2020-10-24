@@ -3,6 +3,7 @@ package astronomia.core;
 import astronomia.core.commands.Join;
 import astronomia.core.commands.Leave;
 import astronomia.core.commands.fun.Ping;
+import astronomia.core.commands.fun.darylJoker;
 import astronomia.core.commands.musicplayer.*;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
@@ -24,7 +25,7 @@ public class CommandListener {
 
     private void loadCommands(CommandClientBuilder commandClientBuilder) {
         commandClientBuilder.addCommands(
-                new Ping(), new Join(), new Leave(), new Repeat(), new SongHistory(),
+                new darylJoker(), new Ping(), new Join(), new Leave(), new Repeat(), new SongHistory(),
                 new Play(), new Pause(), new Queue(), new Resume(), new Push(), new Skip(), new Volume()
         );
     }
