@@ -1,5 +1,6 @@
 package astronomia.modules.musicplayer;
 
+import astronomia.constant.ApplicationConstants;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -15,6 +16,7 @@ import static astronomia.constant.ApplicationConstants.DEFAULT_MUSIC_PLAYER_VOLU
 public class TrackScheduler extends AudioEventAdapter {
   private final AudioPlayer player;
   private final Vector<AudioTrack> queue;
+  private final Vector<AudioTrack> queueHistory;
 
   /**
    * @param player The audio player this scheduler uses
@@ -23,6 +25,7 @@ public class TrackScheduler extends AudioEventAdapter {
     this.player = player;
     this.player.setVolume(DEFAULT_MUSIC_PLAYER_VOLUME);
     this.queue = new Vector<>();
+    this.queueHistory = new Vector<>();
   }
 
   /**
@@ -36,19 +39,25 @@ public class TrackScheduler extends AudioEventAdapter {
     // track goes to the queue instead.
     if (!player.startTrack(track, true)) {
       queue.add(track);
+    } else {
+      pushTrackToSongHistoryQueue(track);
     }
   }
 
   /**
    * Start the next track, stopping the current one if it is playing.
    */
-  public void nextTrack() {
+  public void nextTrack(boolean isRepeat) {
     // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
     // giving null to startTrack, which is a valid argument and will simply stop the player.
     if (queue.isEmpty()) {
       player.startTrack(null, false);
     } else {
-      player.startTrack(queue.remove(0), false);
+      AudioTrack nextTrack = queue.remove(0);
+      if (!isRepeat) {
+        pushTrackToSongHistoryQueue(nextTrack);
+      }
+      player.startTrack(nextTrack, false);
     }
   }
 
@@ -56,7 +65,7 @@ public class TrackScheduler extends AudioEventAdapter {
   public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
     // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
     if (endReason.mayStartNext) {
-      nextTrack();
+      nextTrack(false);
     }
   }
 
@@ -96,5 +105,16 @@ public class TrackScheduler extends AudioEventAdapter {
 
   public void pushSelectedTrackToIndex(AudioTrack selectedTrack, int songNewIndex) {
     queue.insertElementAt(selectedTrack,songNewIndex);
+  }
+
+  private void pushTrackToSongHistoryQueue(AudioTrack selectedTrack) {
+    if (queueHistory.size() >= ApplicationConstants.DEFAULT_SONG_HISTORY_SIZE) {
+      queueHistory.removeElementAt(ApplicationConstants.DEFAULT_SONG_HISTORY_SIZE-1);
+    }
+    queueHistory.insertElementAt(selectedTrack,0);
+  }
+
+  public Vector<AudioTrack> getSongHistory(){
+    return queueHistory;
   }
 }

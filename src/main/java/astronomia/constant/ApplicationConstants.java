@@ -8,6 +8,8 @@ public class ApplicationConstants {
     public static final String DEFAULT_COMMAND_PREFIX = "~";
     public static final int DEFAULT_MUSIC_PLAYER_VOLUME = 25;
 
+    public static final int DEFAULT_SONG_HISTORY_SIZE = 20;
+
     public static final String BOT_MESSAGE_REQUIRE_VOICE_CHANNEL = "You have yet to call me! Hook me up & " +
             "I can give you more services, you know the command (Join me) 😎";
 }

@@ -25,7 +25,7 @@ public class Skip extends Command {
 
             if (commandEvent.getGuild().getAudioManager().isConnected()) {
                 if (StringUtils.isBlank(userCommand.getMessage())) {
-                    MusicPlayer.getInstance().skipTrack(commandEvent.getTextChannel());
+                    MusicPlayer.getInstance().skipTrack(commandEvent.getTextChannel(), false);
                 } else {
                     MusicPlayer.getInstance().skipTrackAtIndex(commandEvent.getTextChannel(), userCommand.getMessage());
                 }
