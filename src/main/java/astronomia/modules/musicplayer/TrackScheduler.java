@@ -44,6 +44,10 @@ public class TrackScheduler extends AudioEventAdapter {
     }
   }
 
+  public void queueAll(Vector<AudioTrack> trackList) {
+      queue.addAll(trackList);
+  }
+
   /**
    * Start the next track, stopping the current one if it is playing.
    */

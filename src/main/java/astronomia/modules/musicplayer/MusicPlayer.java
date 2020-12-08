@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 public class MusicPlayer {
     private static final Logger log = LoggerFactory.getLogger(MusicPlayer.class);
@@ -97,15 +98,23 @@ public class MusicPlayer {
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
+                List<AudioTrack> curYoutubeSearchList = playlist.getTracks();
                 AudioTrack firstTrack = playlist.getSelectedTrack();
 
                 if (firstTrack == null) {
-                    firstTrack = playlist.getTracks().get(0);
+                    firstTrack = curYoutubeSearchList.get(0);
                 }
 
                 channel.sendMessage("Adding to queue " + firstTrack.getInfo().title
                         + " (first track of playlist " + playlist.getName() + ")").queue();
 
+                if (curYoutubeSearchList.size() > 1) {
+                    if (curYoutubeSearchList.remove(firstTrack)) {
+                        Vector tempVector = new Vector<>();
+                        tempVector.addAll(curYoutubeSearchList);
+                        musicManager.scheduler.queueAll(tempVector);
+                    }
+                }
                 play(guild, channel, member, musicManager, firstTrack);
             }
 
