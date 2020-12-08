@@ -77,6 +77,7 @@ public class TrackScheduler extends AudioEventAdapter {
    * clear all tracks
    */
   public void emptyAllTrack() {
+    queue.removeAllElements();
     player.destroy();
   }
 
