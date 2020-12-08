@@ -98,20 +98,20 @@ public class MusicPlayer {
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-                List<AudioTrack> curYoutubeSearchList = playlist.getTracks();
+                List<AudioTrack> curSongSearchList = playlist.getTracks();
                 AudioTrack firstTrack = playlist.getSelectedTrack();
 
                 if (firstTrack == null) {
-                    firstTrack = curYoutubeSearchList.get(0);
+                    firstTrack = curSongSearchList.get(0);
                 }
 
                 channel.sendMessage("Adding to queue " + firstTrack.getInfo().title
                         + " (first track of playlist " + playlist.getName() + ")").queue();
 
-                if (curYoutubeSearchList.size() > 1) {
-                    if (curYoutubeSearchList.remove(firstTrack)) {
+                if (curSongSearchList.size() > 1) {
+                    if (curSongSearchList.remove(firstTrack)) {
                         Vector tempVector = new Vector<>();
-                        tempVector.addAll(curYoutubeSearchList);
+                        tempVector.addAll(curSongSearchList);
                         musicManager.scheduler.queueAll(tempVector);
                     }
                 }
