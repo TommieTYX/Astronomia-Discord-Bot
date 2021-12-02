@@ -1,43 +1,36 @@
 package astronomia.core.commands.musicplayer;
 
-import astronomia.core.CommandListener;
+import astronomia.models.UserCommand;
 import astronomia.modules.musicplayer.MusicPlayer;
 import astronomia.utils.CommonUtils;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import org.springframework.stereotype.Component;
+import astronomia.utils.MessageHelper;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
 
 import static astronomia.constant.ApplicationConstants.BOT_MESSAGE_REQUIRE_VOICE_CHANNEL;
 
-@Component
-public class Push extends CommandListener{
-
-    private static String COMMAND_KEYWORD = "push";
-    private static String COMMAND_DESCRIPTION = "Push a specific music in queue to play next";
+public class Push extends Command {
 
     public Push() {
-        init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
-        addArgs(OptionType.STRING, "id", "Music id", true);
+        super.name = "push";
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
-    {
-        if (!event.getName().equals(COMMAND_KEYWORD)) return;
+    protected void execute(CommandEvent commandEvent) {
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
-                (event.getTextChannel(), event.getMember());
+                (commandEvent.getTextChannel(), commandEvent.getMember());
         if (isUserConnectedToChannel) {
-            if (event.getGuild().getAudioManager().isConnected()) {
-                String arg = event.getOptions().get(0).getAsString();
+            UserCommand userCommand = MessageHelper.extractUserCommand(commandEvent.getMessage().getContentRaw());
 
-                if (CommonUtils.isNotBlankAndCheckNumeric(arg, true)) {
-                    MusicPlayer.getInstance().pushSongPosition(event.getTextChannel(),
-                            Integer.parseInt(arg), 1);
+            if (commandEvent.getGuild().getAudioManager().isConnected()) {
+                if (CommonUtils.isNotBlankAndCheckNumeric(userCommand.getMessage(), true)) {
+                    MusicPlayer.getInstance().pushSongPosition(commandEvent.getTextChannel(),
+                            Integer.parseInt(userCommand.getMessage()), 1);
                 } else {
-                    event.reply("Give me the correct song Id to push, you dumb dumb! 😎").setEphemeral(true).queue();
+                    commandEvent.reply("Give me the correct song Id to push, you dumb dumb! 😎");
                 }
             } else {
-                event.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL).setEphemeral(true).queue();
+                commandEvent.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL);
             }
         }
     }
