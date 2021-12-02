@@ -1,34 +1,32 @@
 package astronomia.core.commands.musicplayer;
 
-import astronomia.core.CommandListener;
+import astronomia.models.UserCommand;
 import astronomia.modules.musicplayer.MusicPlayer;
 import astronomia.utils.CommonUtils;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import org.springframework.stereotype.Component;
+import astronomia.utils.MessageHelper;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
+import org.apache.maven.shared.utils.StringUtils;
 
 import static astronomia.constant.ApplicationConstants.BOT_MESSAGE_REQUIRE_VOICE_CHANNEL;
 
-@Component
-public class Pause extends CommandListener {
-
-    private static String COMMAND_KEYWORD = "pause";
-    private static String COMMAND_DESCRIPTION = "Pause currently playing music";
+public class Pause extends Command {
 
     public Pause() {
-        init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
+        super.name = "pause";
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
-    {
-        if (!event.getName().equals(COMMAND_KEYWORD)) return;
+    protected void execute(CommandEvent commandEvent) {
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
-                (event.getTextChannel(), event.getMember());
+                (commandEvent.getTextChannel(), commandEvent.getMember());
         if (isUserConnectedToChannel) {
-            if (event.getGuild().getAudioManager().isConnected()) {
-                MusicPlayer.getInstance().pauseTrack(event.getTextChannel(), true);
+            UserCommand userCommand = MessageHelper.extractUserCommand(commandEvent.getMessage().getContentRaw());
+
+            if (commandEvent.getGuild().getAudioManager().isConnected()) {
+                MusicPlayer.getInstance().pauseTrack(commandEvent.getTextChannel(), true);
             } else {
-                event.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL).setEphemeral(true).queue();
+                commandEvent.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL);
             }
         }
     }

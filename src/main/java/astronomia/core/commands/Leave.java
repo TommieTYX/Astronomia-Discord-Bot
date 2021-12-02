@@ -1,24 +1,24 @@
 package astronomia.core.commands;
 
-import astronomia.core.CommandListener;
 import astronomia.modules.Accessibility;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import org.springframework.stereotype.Component;
+import astronomia.modules.musicplayer.MusicPlayer;
+import astronomia.utils.CommonUtils;
+import astronomia.utils.MessageHelper;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
 
-@Component
-public class Leave extends CommandListener{
-
-    private static String COMMAND_KEYWORD = "leave";
-    private static String COMMAND_DESCRIPTION = "Ask bot to leave voice channel";
+public class Leave extends Command {
 
     public Leave() {
-        init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
+        super.name = "leave";
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
-    {
-        if (!event.getName().equals(COMMAND_KEYWORD)) return;
-        Accessibility.leave(event.getGuild(), event.getTextChannel());
+    protected void execute(CommandEvent commandEvent) {
+        boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
+                (commandEvent.getTextChannel(), commandEvent.getMember());
+        if (isUserConnectedToChannel) {
+            Accessibility.leave(commandEvent.getGuild(), commandEvent.getTextChannel());
+        }
     }
 }

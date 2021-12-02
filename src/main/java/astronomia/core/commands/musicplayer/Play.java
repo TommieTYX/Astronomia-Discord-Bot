@@ -1,36 +1,26 @@
 package astronomia.core.commands.musicplayer;
 
-import astronomia.core.CommandListener;
+import astronomia.models.UserCommand;
 import astronomia.modules.musicplayer.MusicPlayer;
 import astronomia.utils.CommonUtils;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import org.springframework.stereotype.Component;
+import astronomia.utils.MessageHelper;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
 
-@Component
-public class Play extends CommandListener{
-
-    private static String COMMAND_KEYWORD = "play";
-    private static String COMMAND_DESCRIPTION = "Play music";
+public class Play extends Command {
 
     public Play() {
-        init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
-        addArgs(OptionType.STRING, "query", "Url / Title. Only support youtube for now", true);
+        super.name = "play";
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
-    {
-        if (!event.getName().equals(COMMAND_KEYWORD)) return;
+    protected void execute(CommandEvent commandEvent) {
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
-                (event.getTextChannel(), event.getMember());
+                (commandEvent.getTextChannel(), commandEvent.getMember());
         if (isUserConnectedToChannel) {
-            if (!event.getOptions().isEmpty()) {
-                MusicPlayer.getInstance().loadAndPlay(event.getGuild(), event.getTextChannel(),
-                        event.getMember(), event.getOptions().get(0).getAsString());
-            } else {
-                event.reply("Please enter a music title / youtube url").setEphemeral(true).queue();
-            }
+            UserCommand userCommand = MessageHelper.extractUserCommand(commandEvent.getMessage().getContentRaw());
+            MusicPlayer.getInstance().loadAndPlay(commandEvent.getGuild(), commandEvent.getTextChannel(),
+                    commandEvent.getMember(), userCommand.getMessage());
         }
     }
 }
