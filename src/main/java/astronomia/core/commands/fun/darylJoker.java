@@ -1,13 +1,14 @@
-package astronomia.core.commands.musicplayer;
+package astronomia.core.commands.fun;
 
 import astronomia.modules.musicplayer.MusicPlayer;
 import astronomia.utils.CommonUtils;
+import astronomia.utils.MessageHelper;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
-public class SongHistory extends Command {
-    public SongHistory() {
-        super.name = "history";
+public class darylJoker extends Command {
+    public darylJoker() {
+        super.name = "daryljoker";
     }
 
     @Override
@@ -15,7 +16,9 @@ public class SongHistory extends Command {
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
                 (commandEvent.getTextChannel(), commandEvent.getMember());
         if (isUserConnectedToChannel) {
-            MusicPlayer.getInstance().getSongHistory(commandEvent.getTextChannel());
+            commandEvent.reply("<@228148488171552770>, you are a joke!");
+            MusicPlayer.getInstance().loadAndPlay(commandEvent.getGuild(), commandEvent.getTextChannel(),
+                    commandEvent.getMember(), "https://www.youtube.com/watch?v=FvRf2ov-glI&ab_channel=AkumaShadow");
         }
     }
 }

@@ -1,24 +1,17 @@
 package astronomia.core.commands;
 
-import astronomia.core.CommandListener;
 import astronomia.modules.Accessibility;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import org.springframework.stereotype.Component;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
 
-@Component
-public class Join extends CommandListener{
-
-    private static String COMMAND_KEYWORD = "join";
-    private static String COMMAND_DESCRIPTION = "Invite bot to the voice channel";
+public class Join extends Command {
 
     public Join() {
-        init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
+        super.name = "join";
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
-    {
-        if (!event.getName().equals(COMMAND_KEYWORD)) return;
-        Accessibility.join(event.getGuild(), event.getTextChannel(), event.getMember());
+    protected void execute(CommandEvent commandEvent) {
+        Accessibility.join(commandEvent.getGuild(), commandEvent.getTextChannel(), commandEvent.getMember());
     }
 }

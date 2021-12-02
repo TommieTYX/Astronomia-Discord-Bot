@@ -1,29 +1,23 @@
 package astronomia.core.commands.musicplayer;
 
-import astronomia.core.CommandListener;
+import astronomia.models.UserCommand;
 import astronomia.modules.musicplayer.MusicPlayer;
 import astronomia.utils.CommonUtils;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import org.springframework.stereotype.Component;
+import astronomia.utils.MessageHelper;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
 
-@Component
-public class Repeat extends CommandListener{
-
-    private static String COMMAND_KEYWORD = "repeat";
-    private static String COMMAND_DESCRIPTION = "Repeat the current song next";
-
+public class Repeat extends Command {
     public Repeat() {
-        init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
+        super.name = "repeat";
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
-    {
-        if (!event.getName().equals(COMMAND_KEYWORD)) return;
+    protected void execute(CommandEvent commandEvent) {
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
-                (event.getTextChannel(), event.getMember());
+                (commandEvent.getTextChannel(), commandEvent.getMember());
         if (isUserConnectedToChannel) {
-            MusicPlayer.getInstance().repeatSong(event.getTextChannel());
+            MusicPlayer.getInstance().repeatSong(commandEvent.getTextChannel());
         }
     }
 }
