@@ -1,21 +1,31 @@
 package astronomia.core.commands.musicplayer;
 
+import astronomia.core.CommandListener;
 import astronomia.modules.musicplayer.MusicPlayer;
 import astronomia.utils.CommonUtils;
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import org.springframework.stereotype.Component;
 
-public class SongHistory extends Command {
+import static astronomia.constant.ApplicationConstants.DEFAULT_SONG_HISTORY_SIZE;
+
+@Component
+public class SongHistory extends CommandListener{
+
+    private static String COMMAND_KEYWORD = "history";
+    private static String COMMAND_DESCRIPTION = "Queue history of the last "+ DEFAULT_SONG_HISTORY_SIZE +" played music";
+
     public SongHistory() {
-        super.name = "history";
+        init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
     }
 
     @Override
-    protected void execute(CommandEvent commandEvent) {
+    public void onSlashCommand(SlashCommandEvent event)
+    {
+        if (!event.getName().equals(COMMAND_KEYWORD)) return;
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
-                (commandEvent.getTextChannel(), commandEvent.getMember());
+                (event.getTextChannel(), event.getMember());
         if (isUserConnectedToChannel) {
-            MusicPlayer.getInstance().getSongHistory(commandEvent.getTextChannel());
+            MusicPlayer.getInstance().getSongHistory(event.getTextChannel());
         }
     }
 }
