@@ -1,32 +1,39 @@
 package astronomia.core;
 
-import astronomia.core.commands.Join;
-import astronomia.core.commands.Leave;
-import astronomia.core.commands.fun.Ping;
-import astronomia.core.commands.fun.darylJoker;
-import astronomia.core.commands.musicplayer.*;
-import com.jagrosh.jdautilities.command.CommandClient;
-import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import lombok.Getter;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import static astronomia.constant.ApplicationConstants.DEFAULT_COMMAND_PREFIX;
+import javax.annotation.Nonnull;
+import java.util.List;
 
-public class CommandListener {
+public abstract class CommandListener extends ListenerAdapter {
 
-    public CommandClient build() {
-        CommandClientBuilder commandClientBuilder = new CommandClientBuilder();
-        commandClientBuilder.setPrefix(DEFAULT_COMMAND_PREFIX);
-        commandClientBuilder.setHelpWord("help");
-        commandClientBuilder.setOwnerId("223395701197897728");
+    private CommandData commandData;
 
-        loadCommands(commandClientBuilder);
-
-        return commandClientBuilder.build();
+    public String getCommand() {
+        return commandData.getName();
     }
 
-    private void loadCommands(CommandClientBuilder commandClientBuilder) {
-        commandClientBuilder.addCommands(
-                new darylJoker(), new Ping(), new Join(), new Leave(), new Repeat(), new SongHistory(),
-                new Play(), new Pause(), new Queue(), new Resume(), new Push(), new Skip(), new Volume()
-        );
+    public String getDescription() {
+        return commandData.getDescription();
+    }
+
+    public List<OptionData> getArgs() {
+        return commandData.getOptions();
+    }
+
+    protected void init(@Nonnull String command, @Nonnull String description) {
+        commandData = new CommandData(command, description);
+    }
+
+    protected void addArgs(OptionType optionType, String arg, String description) {
+        commandData.addOption(optionType, arg, description, false);
+    }
+
+    protected void addArgs(OptionType optionType, String arg, String description, boolean isRequired) {
+        commandData.addOption(optionType, arg, description, isRequired);
     }
 }

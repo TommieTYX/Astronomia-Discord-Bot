@@ -1,26 +1,36 @@
 package astronomia.core.commands.musicplayer;
 
-import astronomia.models.UserCommand;
+import astronomia.core.CommandListener;
 import astronomia.modules.musicplayer.MusicPlayer;
 import astronomia.utils.CommonUtils;
-import astronomia.utils.MessageHelper;
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import org.springframework.stereotype.Component;
 
-public class Play extends Command {
+@Component
+public class Play extends CommandListener{
+
+    private static String COMMAND_KEYWORD = "play";
+    private static String COMMAND_DESCRIPTION = "Play music";
 
     public Play() {
-        super.name = "play";
+        init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
+        addArgs(OptionType.STRING, "query", "Url / Title. Only support youtube for now", true);
     }
 
     @Override
-    protected void execute(CommandEvent commandEvent) {
+    public void onSlashCommand(SlashCommandEvent event)
+    {
+        if (!event.getName().equals(COMMAND_KEYWORD)) return;
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
-                (commandEvent.getTextChannel(), commandEvent.getMember());
+                (event.getTextChannel(), event.getMember());
         if (isUserConnectedToChannel) {
-            UserCommand userCommand = MessageHelper.extractUserCommand(commandEvent.getMessage().getContentRaw());
-            MusicPlayer.getInstance().loadAndPlay(commandEvent.getGuild(), commandEvent.getTextChannel(),
-                    commandEvent.getMember(), userCommand.getMessage());
+            if (!event.getOptions().isEmpty()) {
+                MusicPlayer.getInstance().loadAndPlay(event.getGuild(), event.getTextChannel(),
+                        event.getMember(), event.getOptions().get(0).getAsString());
+            } else {
+                event.reply("Please enter a music title / youtube url").setEphemeral(true).queue();
+            }
         }
     }
 }

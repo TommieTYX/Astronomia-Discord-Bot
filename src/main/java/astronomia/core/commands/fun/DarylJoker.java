@@ -1,4 +1,4 @@
-package astronomia.core.commands.musicplayer;
+package astronomia.core.commands.fun;
 
 import astronomia.core.CommandListener;
 import astronomia.modules.musicplayer.MusicPlayer;
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 import static astronomia.constant.ApplicationConstants.BOT_MESSAGE_REQUIRE_VOICE_CHANNEL;
 
 @Component
-public class Queue extends CommandListener{
+public class DarylJoker extends CommandListener {
 
-    private static String COMMAND_KEYWORD = "queue";
-    private static String COMMAND_DESCRIPTION = "View the current music request in queue";
+    private static String COMMAND_KEYWORD = "daryljoker";
+    private static String COMMAND_DESCRIPTION = "This one I dont need to explain liao la hor? 😎";
 
-    public Queue() {
+    public DarylJoker() {
         init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
     }
 
@@ -25,11 +25,9 @@ public class Queue extends CommandListener{
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
                 (event.getTextChannel(), event.getMember());
         if (isUserConnectedToChannel) {
-            if (event.getGuild().getAudioManager().isConnected()) {
-                MusicPlayer.getInstance().getTracksList(event.getTextChannel());
-            } else {
-                event.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL).setEphemeral(true).queue();
-            }
+            event.reply("<@228148488171552770>, you are a joke!").setTTS(true).queue();
+            MusicPlayer.getInstance().loadAndPlay(event.getGuild(), event.getTextChannel(),
+                    event.getMember(), "https://www.youtube.com/watch?v=FvRf2ov-glI&ab_channel=AkumaShadow");
         }
     }
 }
