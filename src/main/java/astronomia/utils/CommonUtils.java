@@ -2,6 +2,7 @@ package astronomia.utils;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.maven.shared.utils.StringUtils;
@@ -40,5 +41,14 @@ public class CommonUtils {
             return false;
         }
         return true;
+    }
+
+    public static boolean checkCurrentUserRoleExistByRoleName(User user, String roleName) {
+        if (user.getJDA().getRoles() != null && !user.getJDA().getRoles().isEmpty()) {
+            return user.getJDA().getRoles().stream().filter(r -> r.getName().equals(roleName))
+                    .findFirst()
+                    .isPresent();
+        }
+        return false;
     }
 }
