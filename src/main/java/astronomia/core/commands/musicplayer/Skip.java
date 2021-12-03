@@ -1,36 +1,43 @@
 package astronomia.core.commands.musicplayer;
 
-import astronomia.models.UserCommand;
+import astronomia.core.commands.AbstractCommand;
 import astronomia.modules.musicplayer.MusicPlayer;
 import astronomia.utils.CommonUtils;
-import astronomia.utils.MessageHelper;
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.apache.maven.shared.utils.StringUtils;
+import org.springframework.stereotype.Component;
 
 import static astronomia.constant.ApplicationConstants.BOT_MESSAGE_REQUIRE_VOICE_CHANNEL;
 
-public class Skip extends Command {
+@Component
+public class Skip extends AbstractCommand {
+
+    private static String COMMAND_KEYWORD = "skip";
+    private static String COMMAND_DESCRIPTION = "Skip / remove music from queue";
 
     public Skip() {
-        super.name = "skip";
+        init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
+        addArgs(OptionType.STRING, "id",
+                "Music id. By default, skipping current music if music id is not provided", false);
     }
 
     @Override
-    protected void execute(CommandEvent commandEvent) {
+    public void onSlashCommand(SlashCommandEvent event)
+    {
+        if (!event.getName().equals(COMMAND_KEYWORD)) return;
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
-                (commandEvent.getTextChannel(), commandEvent.getMember());
+                (event.getTextChannel(), event.getMember());
         if (isUserConnectedToChannel) {
-            UserCommand userCommand = MessageHelper.extractUserCommand(commandEvent.getMessage().getContentRaw());
-
-            if (commandEvent.getGuild().getAudioManager().isConnected()) {
-                if (StringUtils.isBlank(userCommand.getMessage())) {
-                    MusicPlayer.getInstance().skipTrack(commandEvent.getTextChannel(), false);
+            if (event.getGuild().getAudioManager().isConnected()) {
+                String arg = event.getOptions().get(0).getAsString();
+                if (StringUtils.isBlank(arg)) {
+                    MusicPlayer.getInstance().skipTrack(event.getTextChannel(), false);
                 } else {
-                    MusicPlayer.getInstance().skipTrackAtIndex(commandEvent.getTextChannel(), userCommand.getMessage());
+                    MusicPlayer.getInstance().skipTrackAtIndex(event.getTextChannel(), arg);
                 }
             } else {
-                commandEvent.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL);
+                event.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL).setEphemeral(true).queue();
             }
         }
     }

@@ -1,4 +1,4 @@
-package astronomia.core.commands.musicplayer;
+package astronomia.core.commands.fun;
 
 import astronomia.core.commands.AbstractCommand;
 import astronomia.modules.musicplayer.MusicPlayer;
@@ -6,15 +6,13 @@ import astronomia.utils.CommonUtils;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import org.springframework.stereotype.Component;
 
-import static astronomia.constant.ApplicationConstants.DEFAULT_SONG_HISTORY_SIZE;
-
 @Component
-public class SongHistory extends AbstractCommand {
+public class DarylJoker extends AbstractCommand {
 
-    private static String COMMAND_KEYWORD = "history";
-    private static String COMMAND_DESCRIPTION = "Queue history of the last "+ DEFAULT_SONG_HISTORY_SIZE +" played music";
+    private static String COMMAND_KEYWORD = "daryljoker";
+    private static String COMMAND_DESCRIPTION = "This one I dont need to explain liao la hor? 😎";
 
-    public SongHistory() {
+    public DarylJoker() {
         init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
     }
 
@@ -25,7 +23,9 @@ public class SongHistory extends AbstractCommand {
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
                 (event.getTextChannel(), event.getMember());
         if (isUserConnectedToChannel) {
-            MusicPlayer.getInstance().getSongHistory(event.getTextChannel());
+            event.reply("<@228148488171552770>, you are a joke!").setTTS(true).queue();
+            MusicPlayer.getInstance().loadAndPlay(event.getGuild(), event.getTextChannel(),
+                    event.getMember(), "https://www.youtube.com/watch?v=FvRf2ov-glI&ab_channel=AkumaShadow");
         }
     }
 }

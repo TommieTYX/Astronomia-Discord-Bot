@@ -1,27 +1,34 @@
 package astronomia.core.commands.musicplayer;
 
+import astronomia.core.commands.AbstractCommand;
 import astronomia.modules.musicplayer.MusicPlayer;
 import astronomia.utils.CommonUtils;
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import org.springframework.stereotype.Component;
 
 import static astronomia.constant.ApplicationConstants.BOT_MESSAGE_REQUIRE_VOICE_CHANNEL;
 
-public class Queue extends Command {
+@Component
+public class Queue extends AbstractCommand {
+
+    private static String COMMAND_KEYWORD = "queue";
+    private static String COMMAND_DESCRIPTION = "View the current music request in queue";
 
     public Queue() {
-        super.name = "queue";
+        init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
     }
 
     @Override
-    protected void execute(CommandEvent commandEvent) {
+    public void onSlashCommand(SlashCommandEvent event)
+    {
+        if (!event.getName().equals(COMMAND_KEYWORD)) return;
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
-                (commandEvent.getTextChannel(), commandEvent.getMember());
+                (event.getTextChannel(), event.getMember());
         if (isUserConnectedToChannel) {
-            if (commandEvent.getGuild().getAudioManager().isConnected()) {
-                MusicPlayer.getInstance().getTracksList(commandEvent.getTextChannel());
+            if (event.getGuild().getAudioManager().isConnected()) {
+                MusicPlayer.getInstance().getTracksList(event.getTextChannel());
             } else {
-                commandEvent.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL);
+                event.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL).setEphemeral(true).queue();
             }
         }
     }
