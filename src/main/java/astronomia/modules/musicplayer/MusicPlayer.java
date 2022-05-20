@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.Interaction;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.maven.shared.utils.StringUtils;
 import org.slf4j.Logger;
@@ -66,13 +67,13 @@ public class MusicPlayer {
     }
 
     private void play(Guild guild, TextChannel channel, Member member,
-                             GuildMusicManager musicManager, AudioTrack track) {
-        Accessibility.join(guild, channel, member);
+                             GuildMusicManager musicManager, AudioTrack track, Interaction interaction) {
+        Accessibility.join(guild, channel, member, interaction);
         musicManager.scheduler.queue(track);
-        getTracksList(channel);
+        getTracksList(channel, interaction);
     }
 
-    public void loadAndPlay(Guild guild, TextChannel channel, Member member, String userInput) {
+    public void loadAndPlay(Guild guild, TextChannel channel, Member member, String userInput, Interaction interaction) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         final String url;
@@ -91,9 +92,8 @@ public class MusicPlayer {
         playerManager.loadItemOrdered(musicManager, url, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                channel.sendMessage("Adding to queue " + track.getInfo().title).queue();
-
-                play(guild, channel, member, musicManager, track);
+                interaction.reply("Adding to queue " + track.getInfo().title).setEphemeral(true).queue();
+                play(guild, channel, member, musicManager, track, interaction);
             }
 
             @Override
@@ -105,8 +105,8 @@ public class MusicPlayer {
                     firstTrack = curSongSearchList.get(0);
                 }
 
-                channel.sendMessage("Adding to queue " + firstTrack.getInfo().title
-                        + " (first track of playlist " + playlist.getName() + ")").queue();
+                interaction.reply("Adding to queue " + firstTrack.getInfo().title
+                        + " (first track of playlist " + playlist.getName() + ")").setEphemeral(true).queue();
 
                 if (curSongSearchList.size() > 1) {
                     if (curSongSearchList.remove(firstTrack)) {
@@ -115,81 +115,81 @@ public class MusicPlayer {
                         musicManager.scheduler.queueAll(tempVector);
                     }
                 }
-                play(guild, channel, member, musicManager, firstTrack);
+                play(guild, channel, member, musicManager, firstTrack, interaction);
             }
 
             @Override
             public void noMatches() {
-                channel.sendMessage("Nothing found by " + userInput).queue();
+                interaction.reply("Nothing found by " + userInput).setEphemeral(true).queue();
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
-                channel.sendMessage("Could not play: " + exception.getMessage()).queue();
+                interaction.reply("Could not play: " + exception.getMessage()).setEphemeral(true).queue();
             }
         });
     }
 
-    public void skipTrack(TextChannel channel, boolean isRepeat) {
+    public void skipTrack(TextChannel channel, boolean isRepeat, Interaction interaction) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
         if (musicManager.scheduler.getCurrentPlayingTrack() == null) {
-            channel.sendMessage("You have no more songs to skip, go skip yourself 😎").queue();
+            interaction.reply("You have no more songs to skip, go skip yourself 😎").setEphemeral(true).queue();
          }else {
             musicManager.scheduler.nextTrack(isRepeat);
             if (musicManager.scheduler.getCurrentPlayingTrack() == null) {
-                channel.sendMessage("That was your last song man. Bye 😎").queue();
+                interaction.reply("That was your last song man. Bye 😎").setEphemeral(true).queue();
             } else if (!isRepeat) {
-                channel.sendMessage("Skipped to next track.").queue();
-                getTracksList(channel);
+                interaction.reply("Skipped to next track.").setEphemeral(true).queue();
+                getTracksList(channel, interaction);
             }
         }
     }
 
-    public void skipTrackAtIndex(TextChannel channel, String songIndexStr) {
+    public void skipTrackAtIndex(TextChannel channel, String songIndexStr, Interaction interaction) {
        if(StringUtils.isNumeric(songIndexStr)){
             int songIndex = Integer.parseInt(songIndexStr) - 1;
             GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
             AudioTrack removedTrack = musicManager.scheduler.removeTrackFromCurrentQueueAtIndex(songIndex);
             if(removedTrack != null){
-                channel.sendMessage("⏭ Removed "+removedTrack.getInfo().title).queue();
-                getTracksList(channel);
+                interaction.reply("⏭ Removed "+removedTrack.getInfo().title).setEphemeral(true).queue();
+                getTracksList(channel, interaction);
             }else{
-                channel.sendMessage("No Such Song Track Id To Be Removed Bruhhh! 😎").queue();
+                interaction.reply("No Such Song Track Id To Be Removed Bruhhh! 😎").setEphemeral(true).queue();
             }
         }else{
-            channel.sendMessage("Invalid Song Track Id Given Bruhhh! 😎").queue();
+           interaction.reply("Invalid Song Track Id Given Bruhhh! 😎").setEphemeral(true).queue();
         }
     }
 
-    public void stopAllTracks(TextChannel channel) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+    public void stopAllTracks(Guild guild, Interaction interaction) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(guild);
         musicManager.scheduler.emptyAllTrack();
-        channel.sendMessage("Stopping all tracks.").queue();
+        interaction.reply("Stopping all tracks.").setEphemeral(true).queue();
     }
 
-    public void pauseTrack(TextChannel channel, boolean isPause) {
+    public void pauseTrack(TextChannel channel, boolean isPause, Interaction interaction) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         musicManager.scheduler.setPlayerPause(isPause);
         if(isPause) {
-            channel.sendMessage("You mute me? Watch out!").queue();
+            interaction.reply("You mute me? Watch out!").setEphemeral(true).queue();
         }else {
-            channel.sendMessage("Finally you remember me! 😎").queue();
-            getTracksList(channel);
+            interaction.reply("Finally you remember me! 😎").setEphemeral(true).queue();
+            getTracksList(channel, interaction);
         }
     }
 
-    public void setVolume(TextChannel channel, String volume) {
+    public void setVolume(TextChannel channel, String volume, Interaction interaction) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         if (StringUtils.isBlank(volume)) {
             int currentVolume = musicManager.scheduler.getPlayerVolume();
-            channel.sendMessage("😎 I am at volume: "+currentVolume+
-                    " (throw me a number between 0 - 150 to change my volume)").queue();
+            interaction.reply("😎 I am at volume: "+currentVolume+
+                    " (throw me a number between 0 - 150 to change my volume)").setEphemeral(true).queue();
         } else if (StringUtils.isNumeric(volume) && hasHitVolumeLimit(volume)) {
             musicManager.scheduler.setPlayerVolume(Integer.parseInt(volume));
-            channel.sendMessage("😎 Setting myself volume: "+volume).queue();
+            interaction.reply("😎 Setting myself volume: "+volume).setEphemeral(true).queue();
         } else {
-            channel.sendMessage("Do you know what is a number? Stopping giving me "+volume).queue();
+            interaction.reply("Do you know what is a number? Stopping giving me "+volume).setEphemeral(true).queue();
         }
     }
 
@@ -197,24 +197,24 @@ public class MusicPlayer {
         return Integer.valueOf(volume) >= 0 && Integer.valueOf(volume) <= 150;
     }
 
-    public void getTracksList(TextChannel channel) {
+    public void getTracksList(TextChannel channel, Interaction interaction) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         AudioTrack curPlayingTrack = musicManager.scheduler.getCurrentPlayingTrack();
         if(curPlayingTrack != null){
             Vector<AudioTrack> curAudioTrackQueue = musicManager.scheduler.getCurrentQueuedTracksList();
-            displayAllQueuedTracksList(channel, curPlayingTrack, curAudioTrackQueue);
+            displayAllQueuedTracksList(curPlayingTrack, curAudioTrackQueue, interaction);
         }else{
-            channel.sendMessage("Your Queue Is Empty, Fill Me Up 😎").queue();
+            interaction.reply("Your Queue Is Empty, Fill Me Up 😎").setEphemeral(true).queue();
         }
     }
 
-    private void displayAllQueuedTracksList(TextChannel channel, AudioTrack curPlayingTrack, Vector<AudioTrack> curAudioTrackQueue) {
+    private void displayAllQueuedTracksList(AudioTrack curPlayingTrack, Vector<AudioTrack> curAudioTrackQueue, Interaction interaction) {
         EmbedBuilder curPlayingEmbedBuilder = getNowPlaying(curPlayingTrack);
-        String returnedListStr = constructSongListDetails(channel,curAudioTrackQueue,1024);
+        String returnedListStr = constructSongListDetails(curAudioTrackQueue,1024);
         curPlayingEmbedBuilder.addField("⏯ Queue", (!StringUtils.isBlank(returnedListStr) ?
                 returnedListStr : "Your Queue Is Empty, Fill Me Up \uD83D\uDE0E") , false);
         curPlayingEmbedBuilder.setColor(Color.RED);
-        channel.sendMessage(curPlayingEmbedBuilder.build()).queue();
+        interaction.replyEmbeds(curPlayingEmbedBuilder.build()).setEphemeral(true).queue();
     }
 
     private EmbedBuilder getNowPlaying(AudioTrack curPlayingTrack) {
@@ -242,31 +242,31 @@ public class MusicPlayer {
         return sb.append(curTrackMinutes).append(":").append(curTrackSeconds).toString();
     }
 
-    public void pushSongPosition(TextChannel channel, int songCurrentPosition, int songNewPosition) {
+    public void pushSongPosition(TextChannel channel, int songCurrentPosition, int songNewPosition, Interaction interaction) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         AudioTrack removedTrack = musicManager.scheduler.removeTrackFromCurrentQueueAtIndex(songCurrentPosition-1);
         if (removedTrack != null) {
             musicManager.scheduler.pushSelectedTrackToIndex(removedTrack,songNewPosition-1);
-            channel.sendMessage("⏭ Pushing Song To Front of The Queue: "+removedTrack.getInfo().title).queue();
-            getTracksList(channel);
+            interaction.reply("⏭ Pushing Song To Front of The Queue: "+removedTrack.getInfo().title).setEphemeral(true).queue();
+            getTracksList(channel, interaction);
         }else{
-            channel.sendMessage("No Such Song Track Id To Be Removed Bruhhh! 😎").queue();
+            interaction.reply("No Such Song Track Id To Be Removed Bruhhh! 😎").setEphemeral(true).queue();
         }
     }
 
-    public void repeatSong(TextChannel channel) {
+    public void repeatSong(TextChannel channel, Interaction interaction) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         AudioTrack curPlayingTrack = musicManager.scheduler.getCurrentPlayingTrack();
         if (curPlayingTrack != null) {
             musicManager.scheduler.pushSelectedTrackToIndex(curPlayingTrack.makeClone(),0);
-            this.skipTrack(channel, true);
-            channel.sendMessage("🔁 Replaying "+curPlayingTrack.getInfo().title+" now!").queue();
+            this.skipTrack(channel, true, interaction);
+            interaction.reply("🔁 Replaying "+curPlayingTrack.getInfo().title+" now!").setEphemeral(true).queue();
         } else {
-            channel.sendMessage("You mad bruh? There's no song playing currently for me to replay!").queue();
+            interaction.reply("You mad bruh? There's no song playing currently for me to replay!").setEphemeral(true).queue();
         }
     }
 
-    private String constructSongListDetails(TextChannel channel, Vector<AudioTrack> curSongList, int textLimit) {
+    private String constructSongListDetails(Vector<AudioTrack> curSongList, int textLimit) {
         int songCounter = 1;
         String prevListStr = "";
         StringBuilder songListBuilder = new StringBuilder();
@@ -299,15 +299,15 @@ public class MusicPlayer {
         }
     }
 
-    public void getSongHistory(TextChannel channel) {
+    public void getSongHistory(TextChannel channel, Interaction interaction) {
         EmbedBuilder curPlayingEmbedBuilder = new EmbedBuilder();
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         Vector<AudioTrack> curSongHistoryList = musicManager.scheduler.getSongHistory();
         curPlayingEmbedBuilder.setAuthor("😎 Your History of Recent 20 Songs Played 😎");
-        String returnedListStr = constructSongListDetails(channel,curSongHistoryList,2048);
+        String returnedListStr = constructSongListDetails(curSongHistoryList, 2048);
         curPlayingEmbedBuilder.setDescription(!StringUtils.isBlank(returnedListStr) ?
                 returnedListStr : "You have not listen to any song yet!");
         curPlayingEmbedBuilder.setColor(Color.GREEN);
-        channel.sendMessage(curPlayingEmbedBuilder.build()).queue();
+        interaction.replyEmbeds(curPlayingEmbedBuilder.build()).setEphemeral(true).queue();
     }
 }
