@@ -26,7 +26,7 @@ public class Queue extends AbstractCommand {
                 (event.getTextChannel(), event.getMember());
         if (isUserConnectedToChannel) {
             if (event.getGuild().getAudioManager().isConnected()) {
-                MusicPlayer.getInstance().getTracksList(event.getTextChannel());
+                MusicPlayer.getInstance().getTracksList(event.getTextChannel(), event.getInteraction());
             } else {
                 event.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL).setEphemeral(true).queue();
             }

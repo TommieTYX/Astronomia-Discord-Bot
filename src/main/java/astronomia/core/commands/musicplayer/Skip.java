@@ -31,10 +31,10 @@ public class Skip extends AbstractCommand {
         if (isUserConnectedToChannel) {
             if (event.getGuild().getAudioManager().isConnected()) {
                 String arg = event.getOptions().get(0).getAsString();
-                if (StringUtils.isBlank(arg)) {
-                    MusicPlayer.getInstance().skipTrack(event.getTextChannel(), false);
+                if (event.getOptions().size() > 0 && StringUtils.isNotBlank(arg) && StringUtils.isNumeric(arg)) {
+                    MusicPlayer.getInstance().skipTrackAtIndex(event.getTextChannel(), arg, event.getInteraction());
                 } else {
-                    MusicPlayer.getInstance().skipTrackAtIndex(event.getTextChannel(), arg);
+                    MusicPlayer.getInstance().skipTrack(event.getTextChannel(), false, event.getInteraction());
                 }
             } else {
                 event.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL).setEphemeral(true).queue();
