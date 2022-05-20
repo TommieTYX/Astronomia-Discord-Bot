@@ -14,7 +14,7 @@
     <name>Astronomia Discord Bot</name>
     <description>Just another bot for personal use</description>
     <properties>
-        <java.version>12</java.version>
+        <java.version>17</java.version>
     </properties>
     <dependencies>
         <dependency>
