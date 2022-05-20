@@ -1,42 +1,11 @@
-//package astronomia.core.commands.musicplayer;
-//
-//import astronomia.models.UserCommand;
-//import astronomia.modules.musicplayer.MusicPlayer;
-//import astronomia.utils.CommonUtils;
-//import astronomia.utils.MessageHelper;
-//import com.jagrosh.jdautilities.command.Command;
-//import com.jagrosh.jdautilities.command.CommandEvent;
-//
-//import static astronomia.constant.ApplicationConstants.BOT_MESSAGE_REQUIRE_VOICE_CHANNEL;
-//
-//public class Volume extends Command {
-//
-//    public Volume() {
-//        super.name = "volume";
-//    }
-//
-//    @Override
-//    protected void execute(CommandEvent commandEvent) {
-//        boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
-//                (commandEvent.getTextChannel(), commandEvent.getMember());
-//        if (isUserConnectedToChannel) {
-//            UserCommand userCommand = MessageHelper.extractUserCommand(commandEvent.getMessage().getContentRaw());
-//
-//            if (commandEvent.getGuild().getAudioManager().isConnected()) {
-//                MusicPlayer.getInstance().setVolume(commandEvent.getTextChannel(), userCommand.getMessage());
-//            } else {
-//                commandEvent.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL);
-//            }
-//        }
-//    }
-//}
-
 package astronomia.core.commands.musicplayer;
 
 import astronomia.core.commands.AbstractCommand;
 import astronomia.modules.musicplayer.MusicPlayer;
 import astronomia.utils.CommonUtils;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import org.apache.maven.shared.utils.StringUtils;
 import org.springframework.stereotype.Component;
 
 import static astronomia.constant.ApplicationConstants.BOT_MESSAGE_REQUIRE_VOICE_CHANNEL;
@@ -50,6 +19,8 @@ public class Volume extends AbstractCommand {
 
     public Volume() {
         init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
+        addArgs(OptionType.STRING, "volume",
+                "Volume", true);
     }
 
     @Override
@@ -61,7 +32,9 @@ public class Volume extends AbstractCommand {
         if (isUserConnectedToChannel) {
             if (event.getGuild().getAudioManager().isConnected()) {
                 String arg = event.getOptions().get(0).getAsString();
-                MusicPlayer.getInstance().setVolume(event.getTextChannel(), arg);
+                if (event.getOptions().size() > 0 && StringUtils.isNotBlank(arg) && StringUtils.isNumeric(arg)) {
+                    MusicPlayer.getInstance().setVolume(event.getTextChannel(), arg, event.getInteraction());
+                }
             } else {
                 event.reply(BOT_MESSAGE_REQUIRE_VOICE_CHANNEL).setEphemeral(true).queue();;
             }

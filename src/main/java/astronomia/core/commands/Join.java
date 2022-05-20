@@ -18,6 +18,6 @@ public class Join extends astronomia.core.commands.AbstractCommand {
     public void onSlashCommand(SlashCommandEvent event)
     {
         if (!event.getName().equals(COMMAND_KEYWORD)) return;
-        Accessibility.join(event.getGuild(), event.getTextChannel(), event.getMember());
+        Accessibility.join(event.getGuild(), event.getTextChannel(), event.getMember(), event.getInteraction());
     }
 }

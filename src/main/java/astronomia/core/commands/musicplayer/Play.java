@@ -27,7 +27,7 @@ public class Play extends AbstractCommand {
         if (isUserConnectedToChannel) {
             if (!event.getOptions().isEmpty()) {
                 MusicPlayer.getInstance().loadAndPlay(event.getGuild(), event.getTextChannel(),
-                        event.getMember(), event.getOptions().get(0).getAsString());
+                        event.getMember(), event.getOptions().get(0).getAsString(), event.getInteraction());
             } else {
                 event.reply("Please enter a music title / youtube url").setEphemeral(true).queue();
             }

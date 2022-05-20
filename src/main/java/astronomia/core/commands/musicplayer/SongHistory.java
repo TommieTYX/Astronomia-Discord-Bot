@@ -25,7 +25,7 @@ public class SongHistory extends AbstractCommand {
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
                 (event.getTextChannel(), event.getMember());
         if (isUserConnectedToChannel) {
-            MusicPlayer.getInstance().getSongHistory(event.getTextChannel());
+            MusicPlayer.getInstance().getSongHistory(event.getTextChannel(), event.getInteraction());
         }
     }
 }

@@ -17,7 +17,7 @@ public class Push extends AbstractCommand {
 
     public Push() {
         init(COMMAND_KEYWORD, COMMAND_DESCRIPTION);
-        addArgs(OptionType.STRING, "id", "Music id", true);
+        addArgs(OptionType.STRING, "id", "Music id");
     }
 
     @Override
@@ -32,7 +32,7 @@ public class Push extends AbstractCommand {
 
                 if (CommonUtils.isNotBlankAndCheckNumeric(arg, true)) {
                     MusicPlayer.getInstance().pushSongPosition(event.getTextChannel(),
-                            Integer.parseInt(arg), 1);
+                            Integer.parseInt(arg), 1, event.getInteraction());
                 } else {
                     event.reply("Give me the correct song Id to push, you dumb dumb! 😎").setEphemeral(true).queue();
                 }

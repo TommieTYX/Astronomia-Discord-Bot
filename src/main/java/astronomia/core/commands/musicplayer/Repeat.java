@@ -23,7 +23,7 @@ public class Repeat extends AbstractCommand {
         boolean isUserConnectedToChannel = CommonUtils.isCurrentUserConnectedToChannel
                 (event.getTextChannel(), event.getMember());
         if (isUserConnectedToChannel) {
-            MusicPlayer.getInstance().repeatSong(event.getTextChannel());
+            MusicPlayer.getInstance().repeatSong(event.getTextChannel(), event.getInteraction());
         }
     }
 }

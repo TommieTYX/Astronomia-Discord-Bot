@@ -18,6 +18,6 @@ public class Leave extends astronomia.core.commands.AbstractCommand {
     public void onSlashCommand(SlashCommandEvent event)
     {
         if (!event.getName().equals(COMMAND_KEYWORD)) return;
-        Accessibility.leave(event.getGuild(), event.getTextChannel());
+        Accessibility.leave(event.getGuild(), event.getInteraction());
     }
 }

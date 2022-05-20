@@ -25,7 +25,7 @@ public class DarylJoker extends AbstractCommand {
         if (isUserConnectedToChannel) {
             event.reply("<@228148488171552770>, you are a joke!").setTTS(true).queue();
             MusicPlayer.getInstance().loadAndPlay(event.getGuild(), event.getTextChannel(),
-                    event.getMember(), "https://www.youtube.com/watch?v=FvRf2ov-glI&ab_channel=AkumaShadow");
+                    event.getMember(), "https://www.youtube.com/watch?v=FvRf2ov-glI&ab_channel=AkumaShadow", event.getInteraction());
         }
     }
 }
